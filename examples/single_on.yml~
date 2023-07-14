@@ -1,0 +1,35 @@
+##########################################################################################
+# This file shows an example of a YML configuration for a GRAVITY single-field on-axis OB
+# in which HD142527 is observed
+##########################################################################################
+
+# The first section correspond to the general setup, used for all subsequence OBs in this file
+# Please refer to the ESO Template manual for additional information
+
+setup:
+  run_id: 60.A-9252(M)         # id of the run to upload the OB in the correct place
+  date: 2023-07-14             # Required. But only useful if 'whereistheplanet' is used to predict position of the companion
+  folder: P2GRAVITY_examples   # Folder in P2 where the OB will be uploaded. 
+  INS.SPEC.RES: "HIGH"         # spectral resolution. LOW, MED, or HIGH
+  INS.SPEC.POL: "OUT"          # Polarisation. OUT or IN
+  ISS.BASELINE: ["large"]      # baselines (small, large, or UTs)
+  ISS.VLTITYPE: ["astrometry"] # snapshot, imaging, time-series, or astrometry
+  concatenation: none          # if not none, a concatenation with this name will be created and all OBs put in here
+  constraints:                 # additional constraints
+    skyTransparency: "Variable, thin cirrus" 
+
+ObservingBlocks:
+  HD142527:
+    description: HD142527 binary in single-field
+    mode: single_on
+    target: HD142527
+    objects:
+      star:
+        name: HD142527
+        DET2.DIT: 3
+        DET2.NDIT.OBJECT: 32
+        DET2.NDIT.SKY: 32
+    sequence:
+      - star star sky
+      - star star      
+    calib: False

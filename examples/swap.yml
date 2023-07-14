@@ -1,0 +1,36 @@
+setup:
+  run_id: 60.A-9252(M)
+  folder: "swap"
+  date: "2023-07-02"
+  INS.SPEC.RES: "MED"
+  INS.SPEC.POL: "OUT"
+  ISS.BASELINE: ["UTs"]
+  ISS.VLTITYPE: ["astrometry"]
+  concatenation: True
+  constraints:
+    skyTransparency: "Variable, thin cirrus"
+
+ObservingBlocks:
+  swap:
+    description: swap test
+    mode: dual_off
+    target: HD25535b
+    coord_syst: whereistheplanet
+    objects:
+      A: 
+        name: HR8799
+        DET2.DIT: 1
+        DET2.NDIT.OBJECT: 32
+        DET2.NDIT.SKY: 32
+        coord_syst: radec
+        coord: [0, 0]
+      B:
+        name: Star B
+        DET2.DIT: 1
+        DET2.NDIT.OBJECT: 32
+        DET2.NDIT.SKY: 32
+        coord: [0, 0]
+        coord_syst: radec
+    sequence:
+      - A A swap B B swap A A
+    calib: False

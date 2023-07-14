@@ -1,0 +1,90 @@
+##########################################################################################
+# This file shows an example of a YML configuration for a GRAVITY dual-field off-axis OB
+# in which HD8799b is observed in off-axis, and a binary calibrator subsequently
+# observed in SWAP to obtain the phase-reference. The sequence also ends with an on-axis
+# OB in the central star to calibrate the amplitude
+##########################################################################################
+
+# The first section correspond to the general setup, used for all subsequence OBs in this file
+# Please refer to the ESO Template manual for additional information
+
+setup:
+  run_id: 60.A-9252(M)         # id of the run to upload the OB in the correct place
+  date: 2023-07-14             # Required. But only useful if 'whereistheplanet' is used to predict position of the companion
+  folder: P2GRAVITY_examples   # Folder in P2 where the OB will be uploaded. 
+  INS.SPEC.RES: "MED"          # spectral resolution. LOW, MED, or HIGH
+  INS.SPEC.POL: "OUT"          # Polarisation. OUT or IN
+  ISS.BASELINE: ["UTs"]        # baselines (small, large, or UTs)
+  ISS.VLTITYPE: ["astrometry"] # snapshot, imaging, time-series, or astrometry
+  concatenation: HR8799_seq    # if not empty, a concatenation with this name will be created and all OBs put in here
+  constraints:                 # additional constraints
+    skyTransparency: "Variable, thin cirrus" 
+
+
+
+# This section described the OBs, each made of a succession of template
+# Multiple OBs can de defined in a file, but will share the same above setup.
+
+ObservingBlocks:
+  # Each OB is identified by a label which will also appear in P2
+  HR8799b:
+    # in this first OB, we'll observe the planet using whereistheplanet to set the coordinates
+    description: on-planet off-axis observations  # a short description of what this OB is
+    mode: dual_off                                # can be dual-on, dual-off, single-on, or single-off
+    target: HR8799b                               # this target name will be resolved in simbad to populate various fields. All used if whereitheplanet is used
+    coord_syst: whereistheplanet                  # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
+    coord: [0, 0]                                 # units are mas and deg. ignored if coord_syst=whereistheplanet
+    # objects is a list fiber pointings and exposure settings which will be used in the sequence
+    objects:
+      b:                       # arbitrary label of you choice. In this example, b is the planet
+        name: HR8799b           
+        DET2.DIT: 30           # integration time (in s). Can be 0.3, 1, 3, 10, 30, 100, 300
+        DET2.NDIT.OBJECT: 16   # Number of DITs on the object (4..320)
+        DET2.NDIT.SKY: 16      # Number of DITs on sky (4..320)1
+    # now we describe the sequence of exposures
+    # in dual-off, the sequence should contain the objects above with some swap when changing from one to the other
+    # in this case, we only have observations on b, and no swap. We'll make 2 templates of 2 exp each
+    sequence:    
+      - b b sky
+      - b b
+    calib: False
+
+  HD196885:
+    # now we move to the binary calibrator on which we need to perform a swap. 
+    description: binary swap for phase-reference  # a short description of what this OB is
+    mode: dual_off                                # can be dual-on, dual-off, single-on, or single-off
+    target: HD196885                              # this target name will be resolved in simbad to populate various fields. All used if whereitheplanet is used
+    coord_syst: radec                             # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
+    coord: [285, 430]                             # units are mas and deg. ignored if coord_syst=whereistheplanet
+    # objects is a list fiber pointings and exposure settings which will be used in the sequence
+    objects:
+      A:                       # first component of the binary
+        name: HD196885A           
+        DET2.DIT: 1            # integration time (in s). Can be 0.3, 1, 3, 10, 30, 100, 300
+        DET2.NDIT.OBJECT: 32   # Number of DITs on the object (4..320)
+        DET2.NDIT.SKY: 32      # Number of DITs on sky (4..320)1
+      B:                       # second component of the binary
+        name: HD196885B           
+        DET2.DIT: 1            # integration time (in s). Can be 0.3, 1, 3, 10, 30, 100, 300
+        DET2.NDIT.OBJECT: 32   # Number of DITs on the object (4..320)
+        DET2.NDIT.SKY: 32      # Number of DITs on sky (4..320)1	
+    # now we describe the sequence of exposures
+    # in dual-off, the sequence should contain the objects above with some swap when changing from one to the other
+    sequence:    
+      - A A swap B B sky
+    calib: False    
+
+  HR8799:
+    # last is the central star to calibrate amplitude
+    description: HD8799 star in single-field
+    mode: single_on
+    target: HR8799
+    objects:
+      star:
+        name: HR8799
+        DET2.DIT: 1
+        DET2.NDIT.OBJECT: 64
+        DET2.NDIT.SKY: 64
+    sequence:
+      - star star sky
+    calib: False
