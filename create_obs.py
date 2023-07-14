@@ -11,7 +11,7 @@ Args:
   nogui (bool, optional): if set, do not plot a visual summary of the OBs before sending to P2, but send them without warning
 
 Examples:
-  python create_obs file=path/to/obs.yml --demo
+  python create_obs file=path/to/obs.yml --demo fov=1000
   python create_obs file=path/to/obs.yml --nogui --demo 
 
 Authors:
@@ -25,9 +25,14 @@ Version:
 import p2api
 from getpass import getpass
 
-# ruamel is used to load the yml
-import ruamel.yaml as yaml
-
+# ruamel or yaml to read config yml file
+try:
+    import ruamel.yaml as yaml
+    RUAMEL = True
+except: # if ruamel not available, switch back to pyyaml, which does not handle comments properly
+    import yaml
+    RUAMEL = False
+    
 # import this package
 import p2Gravity as p2g
 from p2Gravity.common import *
@@ -74,7 +79,7 @@ else:
     
 # get filename and load yml
 filename = dargs["file"]    
-cfg = yaml.load(open(filename, "r"), Loader=yaml.RoundTripLoader)
+cfg = yaml.load(open(filename, "r"), Loader=yaml.Loader)
 
 # Create OB
 run_id = cfg["setup"]["run_id"]
