@@ -42,7 +42,7 @@ class SingleOnOb(ObservingBlock):
         geneate the template from the given yml dict and exposure 
         """
         template = tpl.SingleObsExp()
-        template.populate_from_yml(self.objects["star"])            
+        template.populate_from_yml(obj_yml)
         template["SEQ.OBSSEQ"] = exposures
         return template
 
@@ -54,8 +54,10 @@ class SingleOnOb(ObservingBlock):
             exposures = seq.split()
             if not("sky" in exposures):
                 common.printwar("No sky in sequence {} in OB '{}'".format(exposures, self.label))
-            obj_yml = self.objects["star"]
-            exposures = " ".join(exposures).replace("star", "O").replace("sky", "S") # exposure in ESO format
+            obj_label = [dummy for dummy in exposures if dummy != "sky"][0]                
+            obj_yml = self.objects[obj_label]
+            dummy_label = "£££"
+            exposures = " ".join(exposures).replace("sky", dummy_label).replace(obj_label, "O").replace(dummy_label, "S") # exposure in ESO format
             self.templates.append(self._generate_template(obj_yml, exposures))
         # now we can generate acquisition
         self._generate_acquisition()

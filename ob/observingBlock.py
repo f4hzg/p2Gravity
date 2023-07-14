@@ -94,28 +94,17 @@ class ObservingBlock(object):
     @abstractmethod
     def generate_templates(self):
         raise NotImplementedError("Must be overriden")
-        
-    def p2_create(self, api, run_id, folder_name):
+
+#   def p2_create(self, api, run_id, folder_name):
+    
+    def p2_create(self, api, container_id):
         """
         Create the OB on P2.
         @param api: the p2 api object to send data to p2 (must be initialized beforehand)
-        @param run_id: id of the run
-        @param folder_name: name of the folder to put the OB
+        @param container_id: id of the container where to put the OB
         """
         common.printinf("Creating OB '{}'".format(self.label))        
-        myrun = None
-        runs, _ = api.getRuns()
-        for thisrun in runs:
-            if thisrun['progId'] == run_id:
-                myrun = thisrun
-        if myrun is None:
-            common.printerr("Run '{}' not found".format(run_id))
-            common.printinf("Available runs are: {}".format([r["progId"] for r in runs]))            
-        folder_info = common.find_item(folder_name, myrun["containerId"], api, "Folder")
-        if folder_info is None:
-            common.printinf("Creating folder '{}' in run '{}'".format(folder_name, run_id))            
-            folder_info, version = api.createFolder(myrun["containerId"], folder_name)
-        ob, version = api.createOB(folder_info["containerId"], self.label)
+        ob, version = api.createOB(container_id, self.label)
         self.ob_id = ob["obId"]
         self.version = version
         self.ob = ob

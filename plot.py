@@ -57,9 +57,9 @@ def plot_dualObsExp(template, ax = None, fiber_fov = 30, ft_ls = FT_LS, sc_ls = 
             exptime_sky = exptime_sky+dit*ndit_sky            
     txt = "$(\Delta{{}}\mathrm{{RA}}, \Delta{{}}\mathrm{{DEC}}) = ({}\,\mathrm{{mas}}, {}\,\mathrm{{mas}})$\n".format(x, y)
     txt = txt + "$(\mathrm{{PA}}, \mathrm{{SEP}}) = ({}\,\mathrm{{deg}}, {}\,\mathrm{{mas}})$ \n".format(pa, sep)
-    txt = txt + "$(\mathrm{{DIT}}, \mathrm{{NDIT}}, \mathrm{{NDIT_{{SKY}}}}) = ({}\,\mathrm{{s}}, {}, {})$ \n".format(dit, ndit, ndit_sky)    
+    txt = txt + "$(\mathrm{{DIT}}, \mathrm{{NDIT}}, \mathrm{{NDIT_{{SKY}}}}) = ({}\,\mathrm{{s}}, {}\,\mathrm{{s}}, {}\,\mathrm{{s}})$ \n".format(dit, ndit, ndit_sky)    
     txt = txt+"Sequence: {}\n".format(template["SEQ.OBSSEQ"])
-    txt = txt+"Exposure time (object, sky): $({}\,\mathrm{{s}}, {}\,\mathrm{{s}})$\n".format(exptime, exptime_sky)
+#    txt = txt+"Exposure time (object, sky): $({}\,\mathrm{{s}}, {}\,\mathrm{{s}})$\n".format(exptime, exptime_sky)
     return txt
 
 def plot_singleObsExp(template, ax = None, fiber_fov = 30, ft_ls = FT_LS, sc_ls = SC_LS):
@@ -82,6 +82,7 @@ def plot_singleObsExp(template, ax = None, fiber_fov = 30, ft_ls = FT_LS, sc_ls 
         if o == "S":
             exptime_sky = exptime_sky+dit*ndit_sky
     txt = "Sequence: {}\n".format(template["SEQ.OBSSEQ"])
+    txt = txt + "$(\mathrm{{DIT}}, \mathrm{{NDIT}}, \mathrm{{NDIT_{{SKY}}}}) = ({}\,\mathrm{{s}}, {}\,\mathrm{{s}}, {}\,\mathrm{{s}})$ \n".format(dit, ndit, ndit_sky)    
     txt = txt+"Exposure time (object, sky): $({}\,\mathrm{{s}}, {}\,\mathrm{{s}})$\n".format(exptime, exptime_sky)    
     return txt
 
@@ -119,7 +120,7 @@ def plot_ob(ob, title = None, fov = None):
     nrows = 2 + math.ceil(ntpl/6)
     h_ratios = nrows*[5]
     h_ratios[0] = 1
-    h_ratios[1] = 15
+    h_ratios[1] = 30
     gs = gridspec.GridSpec(nrows, ncols, height_ratios = h_ratios)
     # get fiber fov from telescope type
     if "UTs" in ob.acquisition["ISS.BASELINE"]:

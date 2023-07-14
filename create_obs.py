@@ -80,6 +80,32 @@ cfg = yaml.load(open(filename, "r"), Loader=yaml.RoundTripLoader)
 run_id = cfg["setup"]["run_id"]
 folder_name = cfg["setup"]["folder"]
 date = cfg["setup"]["date"]
+# user friendly
+if type(date) != str:
+    date = date.isoformat()
+    cfg["setup"]["date"] = date
+    
+# create the folder if it does not exist
+myrun = None
+runs, _ = api.getRuns()
+for thisrun in runs:
+    if thisrun['progId'] == run_id:
+        myrun = thisrun
+if myrun is None:
+    printinf("Available runs are: {}".format([r["progId"] for r in runs]))                
+    printerr("Run '{}' not found".format(run_id))
+folder_info = find_item(folder_name, myrun["containerId"], api, "Folder")
+if folder_info is None:
+    printinf("Creating folder '{}' in run '{}'".format(folder_name, run_id))            
+    folder_info, version = api.createFolder(myrun["containerId"], folder_name)
+container_id = folder_info["containerId"]
+
+# if concatenation is not none, we need to create a concatenation
+concatenation = cfg["setup"]["concatenation"].rstrip().lstrip()
+if concatenation.lower() != "none":
+    printinf("Creating concatenation '{}' in folder '{}'".format(concatenation, folder_name))                
+    con, conVersion = api.createConcatenation(container_id, concatenation)
+    container_id = con["containerId"]  # new container where to put OBs
 
 # loop through all OBs
 for ob_name in cfg["ObservingBlocks"]:
@@ -97,12 +123,12 @@ for ob_name in cfg["ObservingBlocks"]:
     p2ob.simbad_resolve(ob["target"])
     # in nogui mode, we upload straight to p2    
     if nogui:
-        p2ob.p2_create(api, run_id, folder_name)
+        p2ob.p2_create(api, container_id)
         p2ob.p2_update(api)
     # in gui mode, we lpot the OB and wait for user input
     else:
         def send_p2(event, fig):
-            p2ob.p2_create(api, run_id, folder_name)
+            p2ob.p2_create(api, container_id)
             p2ob.p2_update(api)
             printinf("OB {} sent to run {}".format(ob_name, run_id))
             plt.close(fig)
@@ -112,7 +138,7 @@ for ob_name in cfg["ObservingBlocks"]:
             plt.close(fig)
             return None
         # plot this OB
-        fig, gs = plot_ob(p2ob, title = "run: {}    folder: {}    ob: {}    date: {}".format(run_id, folder_name, ob_name, date), fov=fov)
+        fig, gs = plot_ob(p2ob, title = "run: {}        folder: {}\nob: {}        date: {}".format(run_id, folder_name, ob_name, date), fov=fov)
         # add buttons:
         axConfirm = fig.add_subplot(gs[0, 4])
         axCancel = fig.add_subplot(gs[0, 5])

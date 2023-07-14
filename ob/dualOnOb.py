@@ -71,7 +71,7 @@ class DualOnOb(ObservingBlock):
                 template["SEQ.RELOFF.Y"] = [round(dec, 2)]
             elif obj_yml["coord_syst"] == "whereistheplanet":
                 if WHEREISTHEPLANET:
-                    common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["name"]))                    
+                    common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["name"]))
                     ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["name"], self.setup["date"])
                     template["SEQ.RELOFF.X"] = [round(ra[0], 2)]
                     template["SEQ.RELOFF.Y"] = [round(dec[0], 2)]                    
@@ -97,7 +97,8 @@ class DualOnOb(ObservingBlock):
             if not(obj_label in self.objects):
                 common.printerr("Exposure '{}' in OB '{}' does not match any of the objects".format(obj_label, self.label))
             obj_yml = self.objects[obj_label]
-            exposures = " ".join(exposures).replace(obj_label, "O").replace("sky", "S") # exposure in ESO format
+            dummy_label = "£££"
+            exposures = " ".join(exposures).replace("sky", dummy_label).replace(obj_label, "O").replace(dummy_label, "S") # exposure in ESO format
             self.templates.append(self._generate_template(obj_yml, exposures))
         # now we can generate acquisition
         self._generate_acquisition()
