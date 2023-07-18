@@ -73,10 +73,11 @@ class ObservingBlock(object):
                 self.ob["constraints"][key] = yml["constraints"][key]
         return None
     
-    def simbad_resolve(self, target_name):
+    def simbad_resolve(self, ob):
         """
         Search the information of the star from Simbad.
-        """        
+        """
+        target_name = ob["target"]
         common.printinf("Resolving target {} on Simbad".format(target_name))
         target_table = Simbad.query_object(target_name)
         if target_table is None:
@@ -95,8 +96,6 @@ class ObservingBlock(object):
     def generate_templates(self):
         raise NotImplementedError("Must be overriden")
 
-#   def p2_create(self, api, run_id, folder_name):
-    
     def p2_create(self, api, container_id):
         """
         Create the OB on P2.

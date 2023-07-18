@@ -71,8 +71,8 @@ class DualOnOb(ObservingBlock):
                 template["SEQ.RELOFF.Y"] = [round(dec, 2)]
             elif obj_yml["coord_syst"] == "whereistheplanet":
                 if WHEREISTHEPLANET:
-                    common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["name"]))
-                    ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["name"], self.setup["date"])
+                    common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
+                    ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], self.setup["date"])
                     template["SEQ.RELOFF.X"] = [round(ra[0], 2)]
                     template["SEQ.RELOFF.Y"] = [round(dec[0], 2)]                    
                 else: 

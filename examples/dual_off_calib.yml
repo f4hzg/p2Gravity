@@ -30,10 +30,10 @@ ObservingBlocks:
   HR8799b:
     # in this first OB, we'll observe the planet using whereistheplanet to set the coordinates
     description: on-planet off-axis observations  # a short description of what this OB is
-    mode: dual_off                                # can be dual-on, dual-off, single-on, or single-off
-    target: HR8799b                               # this target name will be resolved in simbad to populate various fields. All used if whereitheplanet is used
+    mode: dual_off                                # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
+    target: HR8799                                # this target name will be resolved in simbad to populate various fields. 
     coord_syst: whereistheplanet                  # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
-    coord: [0, 0]                                 # units are mas and deg. ignored if coord_syst=whereistheplanet
+    coord: HR8799b                                # units are mas and deg. just the target name if coord_syst=whereistheplanet
     # objects is a list fiber pointings and exposure settings which will be used in the sequence
     objects:
       b:                       # arbitrary label of you choice. In this example, b is the planet

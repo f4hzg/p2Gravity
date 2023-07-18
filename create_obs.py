@@ -118,14 +118,20 @@ for ob_name in cfg["ObservingBlocks"]:
     mode = ob["mode"]
     if mode == "single_on":
         p2ob = p2g.ob.SingleOnOb(ob, cfg["setup"], label = ob_name)
-    if mode == "single_off":
+    elif mode == "single_off":
         p2ob = p2g.ob.SingleOffOb(ob, cfg["setup"], label = ob_name)
-    if mode == "dual_on":
+    elif mode == "dual_on":
         p2ob = p2g.ob.DualOnOb(ob, cfg["setup"], label = ob_name)
-    if mode == "dual_off":
+    elif mode == "dual_off":
         p2ob = p2g.ob.DualOffOb(ob, cfg["setup"], label = ob_name)
+    elif mode == "dual_wide_off":
+        p2ob = p2g.ob.DualWideOffOb(ob, cfg["setup"], label = ob_name)
+    elif mode == "dual_wide_on":
+        p2ob = p2g.ob.DualWideOnOb(ob, cfg["setup"], label = ob_name)        
+    else:
+        printerr("Mode {} is unknown.".format(mode))
     p2ob.generate_templates()
-    p2ob.simbad_resolve(ob["target"])
+    p2ob.simbad_resolve(ob)
     # in nogui mode, we upload straight to p2    
     if nogui:
         p2ob.p2_create(api, container_id)

@@ -1,6 +1,7 @@
 ##########################################################################################
-# This file shows an example of a YML configuration for a GRAVITY dual-field off-axis OB
-# in which a binary target is observed by swapping the FT and SC fibers
+# This file shows an example of a YML configuration for a GRAVITY wide dual-field off-axis
+# OB in which theta1 Ori C is observed as the science target, with theta1 Ori B as the
+# fringe-tracking target, with a swap sequence.
 ##########################################################################################
 
 # The first section correspond to the general setup, used for all subsequence OBs in this file
@@ -13,7 +14,8 @@ setup:
   INS.SPEC.RES: "MED"          # spectral resolution. LOW, MED, or HIGH
   INS.SPEC.POL: "OUT"          # Polarisation. OUT or IN
   ISS.BASELINE: ["UTs"]        # baselines (small, large, or UTs)
-  ISS.VLTITYPE: ["astrometry"] # snapshot, imaging, time-series, or astrometry
+  ISS.VLTITYPE: ["snapshot"]   # in Gwide, only snapshot or time-series are allowed. go figure.
+  COU.AG.GSSOURCE: "SCIENCE"
   concatenation: none          # if not none, a concatenation with this name will be created and all OBs put in here
   constraints:                 # additional constraints
     skyTransparency: "Variable, thin cirrus" 
@@ -25,12 +27,11 @@ setup:
 
 ObservingBlocks:
   # Each OB is identified by a label which will also appear in P2
-  GJ64:
+  theta1Ori:
     description: Swap observation of GJ64         # a short description of what this OB is
-    mode: dual_off                                # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
-    target: GJ64                                  # this target name will be resolved in simbad to populate various fields. 
-    coord_syst: radec                             # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
-    coord: [425, 685]                             # units are mas and deg. just the target name if coord_syst=whereistheplanetunits are mas and deg. 
+    mode: dual_wide_off                           # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
+    ft_target: theta1 Ori B                       # this target name will be resolved in simbad to populate various fields. 
+    sc_target: theta1 Ori C                       # this target name will be resolved in simbad to populate various fields.
     # objects is a list fiber pointings and exposure settings which will be used in the sequence
     objects:
       sA:                      # arbitrary label of you choice. In this example, s is the star

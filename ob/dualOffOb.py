@@ -69,8 +69,8 @@ class DualOffOb(ObservingBlock):
                 self.acquisition["SEQ.INS.SOBJ.Y"] = round(dec, 2)
             elif self.yml["coord_syst"] == "whereistheplanet":
                 if WHEREISTHEPLANET:
-                    common.printinf("Resolution of {} with whereistheplanet:".format(self.yml["target"]))
-                    ra, dec, sep, pa = whereistheplanet.predict_planet(self.yml["target"], self.setup["date"])
+                    common.printinf("Resolution of {} with whereistheplanet:".format(self.yml["coord"]))
+                    ra, dec, sep, pa = whereistheplanet.predict_planet(self.yml["coord"], self.setup["date"])
                     self.acquisition["SEQ.INS.SOBJ.X"] = round(ra[0], 2)
                     self.acquisition["SEQ.INS.SOBJ.Y"] = round(dec[0], 2)                  
                 else: 
