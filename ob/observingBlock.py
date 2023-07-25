@@ -88,7 +88,7 @@ class ObservingBlock(object):
             stop()
         self.target = dict({})
         self.target["name"] = target_name        
-        self.acquisition._populate_from_simbad(target_table, target_name = target_name)
+        self.acquisition.populate_from_simbad(target_table, target_name = target_name)
         self._populate_from_simbad(target_table, target_name = target_name)        
         return None
 

@@ -35,6 +35,7 @@ class SingleOnOb(ObservingBlock):
             self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["target"]
         # last step is to populate with setup, and then star object itself, which can be used to bypass any other setup
         self.acquisition.populate_from_yml(self.setup)
+        self.acquisition.populate_from_yml(self.yml)        
         return None
 
     def _generate_template(self, obj_yml, exposures):

@@ -118,7 +118,7 @@ class SingleOnAxisAcq(AcquisitionTemplate):
     def populate_from_simbad(self, target_table, target_name):
         super(SingleOnAxisAcq, self)._populate_from_simbad(target_table, target_name)
         try:
-            self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+            self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
         except:
             common.printwar("H band magnitude not found on Simbad for target {}".format(target_name))                    
         return None

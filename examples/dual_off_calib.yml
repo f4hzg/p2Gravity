@@ -78,6 +78,8 @@ ObservingBlocks:
     # last is the central star to calibrate amplitude
     description: HD8799 star in single-field
     mode: single_on
+    # single-field cannot be taken in astrometric, so we need to override the ISS.VLTITYPE for this OB
+    ISS.VLTITYPE: ["snapshot"]  
     target: HR8799
     objects:
       star:
