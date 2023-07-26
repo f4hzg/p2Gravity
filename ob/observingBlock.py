@@ -27,7 +27,7 @@ Simbad.add_votable_fields('plx')
 
 
 class ObservingBlock(object):
-    def __init__(self, yml, setup, label = ""):
+    def __init__(self, yml, setup, label = "", iscalib = False):
         """
         @param yml: dict containing all the info loaded from the YML of this OB
         @param setup: dict containing all the info loaded from the setup part of the YML
@@ -42,6 +42,7 @@ class ObservingBlock(object):
         self.ob = None
         self.target = dict({})
         self.ob_type = "ObservingBlock"
+        self.iscalib = iscalib
         return None
     
     def _populate_from_simbad(self, target_table, target_name = ""):

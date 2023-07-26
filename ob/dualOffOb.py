@@ -86,7 +86,7 @@ class DualOffOb(ObservingBlock):
         if exposures == "swap":
             return tpl.DualObsSwap()
         else:
-            template = tpl.DualObsExp()
+            template = tpl.DualObsExp(iscalib = self.iscalib)
             template.populate_from_yml(obj_yml)
             template["SEQ.OBSSEQ"] = exposures
         return template

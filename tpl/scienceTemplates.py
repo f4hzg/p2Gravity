@@ -46,9 +46,14 @@ class SingleObsExp(ScienceTemplate):
     SEQ.SKY.Y -- -4000...4000 (2000) -- Sky offset in DEC (mas).
     SEQ.OBSSEQ -- O S (O S) -- Observing sequence of science (O) and sky (S) exposures.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, iscalib = False, *args, **kwargs):
         super(SingleObsExp, self).__init__(*args, **kwargs)
-        self.template_name = 'GRAVITY_single_obs_exp'
+        if iscalib:
+            self.template_name = 'GRAVITY_single_obs_calibrator'
+            self.template_type = 'calib'
+        else:
+            self.template_name = 'GRAVITY_single_obs_exp'
+            self.template_type = 'science'          
         return None
     
 
@@ -66,10 +71,14 @@ class DualObsExp(ScienceTemplate):
     SEQ.SKY.Y -- -4000...4000 (2000) -- Sky offset in DEC (mas).
     SEQ.OBSSEQ -- O S (O S) -- Observing sequence of science (O) and sky (S) exposures.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, iscalib = False, *args, **kwargs):
         super(DualObsExp, self).__init__(*args, **kwargs)
-        self.template_name = 'GRAVITY_dual_obs_exp'
-        self.template_type = 'science'
+        if iscalib:
+            self.template_name = 'GRAVITY_dual_obs_calibrator'
+            self.template_type = 'calib'
+        else:
+            self.template_name = 'GRAVITY_dual_obs_exp'
+            self.template_type = 'science'          
         self["SEQ.RELOFF.X"] = [0]
         self["SEQ.RELOFF.Y"] = [0]
         return None

@@ -24,7 +24,7 @@ class DualOnOb(ObservingBlock):
         See ObservingBlock.__init__
         """        
         super(DualOnOb, self).__init__(*args, **kwargs)
-        self.ob_type = "DualOnOb"        
+        self.ob_type = "DualOnOb"
         return None
 
     def _generate_acquisition(self):
@@ -59,7 +59,7 @@ class DualOnOb(ObservingBlock):
         """
         geneate the template from the given yml dict and exposure 
         """
-        template = tpl.DualObsExp()        
+        template = tpl.DualObsExp(iscalib = self.iscalib)        
         if "coord_syst" in obj_yml:
             if obj_yml["coord_syst"] == "radec":
                 template["SEQ.RELOFF.X"] = [round(obj_yml["coord"][0], 2)]

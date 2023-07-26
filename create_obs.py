@@ -117,17 +117,17 @@ for ob_name in cfg["ObservingBlocks"]:
     ob = cfg["ObservingBlocks"][ob_name]
     mode = ob["mode"]
     if mode == "single_on":
-        p2ob = p2g.ob.SingleOnOb(ob, cfg["setup"], label = ob_name)
+        p2ob = p2g.ob.SingleOnOb(ob, cfg["setup"], label = ob_name, iscalib = ob["calib"])
     elif mode == "single_off":
         p2ob = p2g.ob.SingleOffOb(ob, cfg["setup"], label = ob_name)
     elif mode == "dual_on":
         p2ob = p2g.ob.DualOnOb(ob, cfg["setup"], label = ob_name)
     elif mode == "dual_off":
-        p2ob = p2g.ob.DualOffOb(ob, cfg["setup"], label = ob_name)
+        p2ob = p2g.ob.DualOffOb(ob, cfg["setup"], label = ob_name, iscalib = ob["calib"])
     elif mode == "dual_wide_off":
-        p2ob = p2g.ob.DualWideOffOb(ob, cfg["setup"], label = ob_name)
+        p2ob = p2g.ob.DualWideOffOb(ob, cfg["setup"], label = ob_name, ob["calib"])
     elif mode == "dual_wide_on":
-        p2ob = p2g.ob.DualWideOnOb(ob, cfg["setup"], label = ob_name)        
+        p2ob = p2g.ob.DualWideOnOb(ob, cfg["setup"], label = ob_name)
     else:
         printerr("Mode {} is unknown.".format(mode))
     p2ob.generate_templates()

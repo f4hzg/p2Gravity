@@ -42,7 +42,7 @@ class SingleOnOb(ObservingBlock):
         """
         geneate the template from the given yml dict and exposure 
         """
-        template = tpl.SingleObsExp()
+        template = tpl.SingleObsExp(iscalib = self.iscalib)
         template.populate_from_yml(obj_yml)
         template["SEQ.OBSSEQ"] = exposures
         return template

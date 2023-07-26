@@ -19,7 +19,8 @@ setup:
   concatenation: HR8799_seq    # if not empty, a concatenation with this name will be created and all OBs put in here
   constraints:                 # additional constraints
     skyTransparency: "Variable, thin cirrus" 
-
+    moonDistance: 10
+    atm: 85%
 
 
 # This section described the OBs, each made of a succession of template
@@ -27,7 +28,7 @@ setup:
 
 ObservingBlocks:
   # Each OB is identified by a label which will also appear in P2
-  HR8799b:
+  SCI_HR8799b:
     # in this first OB, we'll observe the planet using whereistheplanet to set the coordinates
     description: on-planet off-axis observations  # a short description of what this OB is
     mode: dual_off                                # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
@@ -38,7 +39,7 @@ ObservingBlocks:
     objects:
       b:                       # arbitrary label of you choice. In this example, b is the planet
         name: HR8799b           
-        DET2.DIT: 30           # integration time (in s). Can be 0.3, 1, 3, 10, 30, 100, 300
+        DET2.DIT: 10           # integration time (in s). Can be 0.3, 1, 3, 10, 30, 100, 300
         DET2.NDIT.OBJECT: 16   # Number of DITs on the object (4..320)
         DET2.NDIT.SKY: 16      # Number of DITs on sky (4..320)1
     # now we describe the sequence of exposures
@@ -49,7 +50,7 @@ ObservingBlocks:
       - b b
     calib: False
 
-  HD196885:
+  CAL_HD196885:
     # now we move to the binary calibrator on which we need to perform a swap. 
     description: binary swap for phase-reference  # a short description of what this OB is
     mode: dual_off                                # can be dual-on, dual-off, single-on, or single-off
@@ -72,14 +73,13 @@ ObservingBlocks:
     # in dual-off, the sequence should contain the objects above with some swap when changing from one to the other
     sequence:    
       - A A swap B B sky
-    calib: False    
+    calib: True    
 
-  HR8799:
+  CAL_HR8799:
     # last is the central star to calibrate amplitude
     description: HD8799 star in single-field
     mode: single_on
     # single-field cannot be taken in astrometric, so we need to override the ISS.VLTITYPE for this OB
-    ISS.VLTITYPE: ["snapshot"]  
     target: HR8799
     objects:
       star:
@@ -89,4 +89,4 @@ ObservingBlocks:
         DET2.NDIT.SKY: 64
     sequence:
       - star star sky
-    calib: False
+    calib: True
