@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #coding: utf8
 """Generate and send GRAVITY OBs to P2
 
@@ -5,8 +6,15 @@ The create_obs script is used to generate GRAVITY OBs and send them to P2
 To use this script, you need to call it with a YML file, see example below.
 
 Args:
-  file (str): the path the to YAML file describing the OBs.
+  file (str): Usually, this is the path the to YAML file describing the OBs. if "generate" is used, then this is the output name of pasted file.
+  generate (str, optional): if set, this script will copy an example in the current directory, to form an initial YML file that you can modify. Can be on of
+                            dual_on, dual_off, dual_off_calib, dual_wide_off, dual_wide_on, single_on
   fov (int, optional): field-of-view to show in the plots. Default to 10*fiver_fov
+  bg (str, optional): path to a image file (jpg, png, etc.) to plot as a background begind the fiber FOV
+  bglim (list, optional): if bg is given, bglim must specify the limits of the bd image as bglim=[xleft,xright,ybottom,ytop] in mas
+  sc_color (str, optional): color to use to plot the science fiber. Default is python C1
+  ft_color (str, optional): color to use to plot the fringe-tracker fiber. Default is python C0
+  acq_only (bool, optional): only plot the acquition and not the individual subplots and text info
   demo (bool, optional): if set, send the OBs to the P2 demo server
   nogui (bool, optional): if set, do not plot a visual summary of the OBs before sending to P2, but send them without warning
   help (bool, optional): print this help message and exit
@@ -65,6 +73,30 @@ for req in REQUIRED_ARGS:
     if not(req in dargs.keys()):
         printerr("Argument '"+req+"' is not optional for this script. Required args are: "+', '.join(REQUIRED_ARGS))
 
+# get filename and load yml
+filename = dargs["file"]
+
+# is this a "generate" command?
+WHEREAMI = os.path.dirname(__file__)
+if "generate" in dargs:
+    IS_GENERATE = True
+    genfile = "{}/examples/{}.yml".format(WHEREAMI, dargs["generate"])
+    if not(os.path.isfile(genfile)):
+        printerr("{} is not an example file. Is {} a valid value for 'generate'?".format(genfile, dargs["generate"]))
+    if os.path.isfile(filename):
+        printerr("{} already exists, and will not be overwritten.".format(filename))
+    else: # copy file
+        content = open(genfile, "r").read()
+        f = open(filename, "w")
+        f.write(content)
+        f.close()
+    sys.exit()
+
+if not(os.path.isfile(dargs["file"])):
+    printerr("{} not found, or is not a file".format(dargs["file"]))    
+cfg = yaml.load(open(filename, "r"), Loader=yaml.Loader)
+
+        
 if "fov" in dargs:
     fov = int(dargs["fov"])
 else:
@@ -80,6 +112,11 @@ if "demo" in dargs:
 else:
     demo = False
 
+if "acq_only" in dargs:
+    acq_only = dargs["acq_only"]
+else:
+    acq_only = False    
+
 if demo:
     # setup for testing on P2 demo server
     api = p2api.ApiConnection('demo', 52052, "tutorial")
@@ -87,11 +124,25 @@ else:
     user = input("ESO P2 username: ")
     password = getpass("ESO P2 password: ")
     api = p2api.ApiConnection('production', user, password)
-    
-# get filename and load yml
-filename = dargs["file"]    
-cfg = yaml.load(open(filename, "r"), Loader=yaml.Loader)
 
+if "bg" in dargs:
+    if not("bglim" in dargs):
+        printerr("bg keyword (specify a background image) cannot be used without a bglim keyword to specify the limits of the image: Use bglim=[xleft,xright,yleft,yright] in mas")
+    if not(os.path.isfile(dargs["bg"])):
+        printerr("{} given for bg image not found, or is not a file".format(dargs["bg"]))
+    bg = dargs["bg"]
+    bglim = dargs["bglim"]
+    bglim = [float(dummy) for dummy in bglim.replace("[", "").replace("]", "").replace("(", "").replace(")", "").split(",")]
+else:
+    bg = None
+    bglim = None
+
+FT_COLOR, SC_COLOR = None, None
+if "ft_color" in dargs:
+    FT_COLOR = dargs["ft_color"]
+if "sc_color" in dargs:
+    SC_COLOR = dargs["sc_color"]
+    
 # Create OB
 run_id = cfg["setup"]["run_id"]
 folder_name = cfg["setup"]["folder"]
@@ -160,7 +211,7 @@ for ob_name in cfg["ObservingBlocks"]:
             plt.close(fig)
             return None
         # plot this OB
-        fig, gs = plot_ob(p2ob, title = "run: {}        folder: {}\nob: {}        date: {}".format(run_id, folder_name, ob_name, date), fov=fov)
+        fig, gs = plot_ob(p2ob, title = "run: {}        folder: {}\nob: {}        date: {}".format(run_id, folder_name, ob_name, date), fov=fov, bg=bg, bglim=bglim, ft_c = FT_COLOR, sc_c = SC_COLOR, acq_only = acq_only)
         # add buttons:
         axConfirm = fig.add_subplot(gs[0, 4])
         axCancel = fig.add_subplot(gs[0, 5])
