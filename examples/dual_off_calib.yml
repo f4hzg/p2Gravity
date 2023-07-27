@@ -19,9 +19,9 @@ setup:
   concatenation: HR8799_seq    # if not empty, a concatenation with this name will be created and all OBs put in here
   constraints:                 # additional constraints
     skyTransparency: "Variable, thin cirrus" 
+    airmass: 1.6
     moonDistance: 10
     atm: 85%
-
 
 # This section described the OBs, each made of a succession of template
 # Multiple OBs can de defined in a file, but will share the same above setup.
@@ -35,6 +35,7 @@ ObservingBlocks:
     target: HR8799                                # this target name will be resolved in simbad to populate various fields. 
     coord_syst: whereistheplanet                  # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
     coord: HR8799b                                # units are mas and deg. just the target name if coord_syst=whereistheplanet
+    SEQ.FT.MODE: 1
     # objects is a list fiber pointings and exposure settings which will be used in the sequence
     objects:
       b:                       # arbitrary label of you choice. In this example, b is the planet

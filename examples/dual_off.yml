@@ -17,7 +17,9 @@ setup:
   concatenation: none          # if not none, a concatenation with this name will be created and all OBs put in here
   constraints:                 # additional constraints
     skyTransparency: "Variable, thin cirrus" 
-
+    airmass: 1.6
+    moonDistance: 10
+    atm: 85%
 
 
 # This section described the OBs, each made of a succession of template

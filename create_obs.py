@@ -125,7 +125,7 @@ for ob_name in cfg["ObservingBlocks"]:
     elif mode == "dual_off":
         p2ob = p2g.ob.DualOffOb(ob, cfg["setup"], label = ob_name, iscalib = ob["calib"])
     elif mode == "dual_wide_off":
-        p2ob = p2g.ob.DualWideOffOb(ob, cfg["setup"], label = ob_name, ob["calib"])
+        p2ob = p2g.ob.DualWideOffOb(ob, cfg["setup"], label = ob_name, iscalib = ob["calib"])
     elif mode == "dual_wide_on":
         p2ob = p2g.ob.DualWideOnOb(ob, cfg["setup"], label = ob_name)
     else:

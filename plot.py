@@ -202,9 +202,9 @@ def plot_dualObsSwap(ob, template, ax = None, fiber_fov = 30, ft_ls = FT_LS, sc_
 
 
 def plot_template(ob, template, **kwargs):
-    if template.template_name == "GRAVITY_single_obs_exp":
+    if template.template_name in ["GRAVITY_single_obs_exp", "GRAVITY_single_obs_calibrator"]:
         return plot_singleObsExp(ob, template, **kwargs)    
-    if template.template_name == "GRAVITY_dual_obs_exp":
+    if template.template_name in ["GRAVITY_dual_obs_exp", "GRAVITY_dual_obs_calibrator"]:
         return plot_dualObsExp(ob, template, **kwargs)
     if template.template_name == "GRAVITY_dual_obs_swap":
         return plot_dualObsSwap(ob, template, **kwargs)
