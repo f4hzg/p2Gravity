@@ -27,6 +27,12 @@ create_obs.py file=path/to/yml --nogui
 ```
 The OBs will be uploaded to P2 without further verification.
 
+For a quick access to the "optimal DIT selection figures" from the template manual, try:
+```python
+create_obs.py --dit
+```
+
+
 ## Optional arguments:
 --help to print the doc massage and exit
 
