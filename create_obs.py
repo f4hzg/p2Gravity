@@ -9,16 +9,20 @@ Args:
   fov (int, optional): field-of-view to show in the plots. Default to 10*fiver_fov
   demo (bool, optional): if set, send the OBs to the P2 demo server
   nogui (bool, optional): if set, do not plot a visual summary of the OBs before sending to P2, but send them without warning
+  help (bool, optional): print this help message and exit
+  dit (bool, optional): show the DIT delection figure and exit
 
 Examples:
   python create_obs file=path/to/obs.yml --demo fov=1000
-  python create_obs file=path/to/obs.yml --nogui --demo 
+  python create_obs file=path/to/obs.yml --nogui --demo
+  python create_obs --dit
+  python create_obs --help
 
 Authors:
   M. Nowak, and the exoGravity team.
 
 Version:
-  0.1
+  {}
 """
 
 # import ESO P2 api and getpass to manage user password
@@ -41,12 +45,19 @@ from p2Gravity.plot import *
 # import sys for args
 import sys
 
+# import version
+from version import VERSION
+
 # load aguments into a dictionnary
 dargs = args_to_dict(sys.argv)
 
 if "help" in dargs.keys():
-    print(__doc__)
+    print(__doc__.format(VERSION))
     sys.exit()
+
+if "dit" in dargs.keys():
+    show_dit_jpg()
+    sys.exit()    
     
 # arg should be the path to the yml file    
 REQUIRED_ARGS = ["file"]

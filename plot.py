@@ -3,12 +3,34 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
 from matplotlib.widgets import Button
+import matplotlib.image as mpimg
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 import math
 import numpy as np
+
+# to show the DIT JPG
+import os
+WHEREAMI = os.path.dirname(__file__)
+DIT_JPG = WHEREAMI+"/selecting_dit_values.jpg"
+
+def show_dit_jpg():
+    fig = plt.figure(figsize=(16, 8))
+    ax = fig.add_subplot(111)
+    img = mpimg.imread(DIT_JPG)
+    imgplot = ax.imshow(img)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.get_xaxis().set_ticks([])
+    ax.get_yaxis().set_ticks([])
+    plt.tight_layout()
+    plt.show()
+    return None
+
 
 # linestyles
 FT_LS = (5, (4, 6))
