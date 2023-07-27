@@ -161,3 +161,5 @@ cython_debug/
 
 uv_coord.py
 examples/dual_wide_on.yml
+
+*~
