@@ -40,9 +40,9 @@ class Template(dict):
         # at update, check that the number of values in OFFSETS is the same as in sequence
         if "SEQ.RELOFF.X" in self:
             nobj = len(self["SEQ.OBSSEQ"].split())
-            if nobj > 1:
-                self["SEQ.RELOFF.X"] = self["SEQ.RELOFF.X"]+[0]*(nobj-1)
-                self["SEQ.RELOFF.Y"] = self["SEQ.RELOFF.Y"]+[0]*(nobj-1)
+            # add 0s to match length
+            self["SEQ.RELOFF.X"] = self["SEQ.RELOFF.X"]+[0]*(nobj-len(self["SEQ.RELOFF.X"]))
+            self["SEQ.RELOFF.Y"] = self["SEQ.RELOFF.Y"]+[0]*(nobj-len(self["SEQ.RELOFF.X"]))
         tpl, version = api.setTemplateParams(self.ob_id, self.tpl, self.params, self.version)
         self.version = version
         self.tpl = tpl

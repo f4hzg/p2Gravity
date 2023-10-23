@@ -86,8 +86,22 @@ class ObservingBlock(object):
             raise ValueError('Input not known by Simbad')
         common.printinf("Simbad resolution of {}: \n {}".format(target_name, target_table))
         if len(target_table) > 1:
-            printwar("There are multiple results from Simbad. Which one should I use? (1, 2, etc.?)")
-            stop()
+            success = False
+            common.printwar("There are multiple results from Simbad. Which one should I use? (1, 2, etc.?)")
+            inp = input(">>")
+            while not(success):
+                try:
+                    inp = int(inp)
+                except: 
+                    common.printwar("Please enter an integer value.")
+                    inp = input(">>")
+                    continue
+                if (inp>=1) and (inp<=len(target_table)):
+                    target_table = target_table[[inp-1]]
+                    success = True
+                else:
+                    common.printwar("Please enter an integer between 1 and {}".format(len(target_table)))
+                    inp = input(">>")
         self.target = dict({})
         self.target["name"] = target_name        
         self.acquisition.populate_from_simbad(target_table, target_name = target_name)

@@ -136,14 +136,21 @@ def plot_dualObsExp(ob, template, ax = None, fiber_fov = 30, ft_c = FT_C, sc_c =
         fib = plt.Circle((0, 0), fiber_fov, edgecolor=ft_c, facecolor="None", ls = ft_ls)
         ax.add_patch(fib)
         # SC fiber
+        x, y = sobj[0], sobj[1]
+        pos = []
         for k in range(len(template["SEQ.RELOFF.X"])):
-            x, y = sobj[0]+template["SEQ.RELOFF.X"][k], sobj[1]+template["SEQ.RELOFF.Y"][k]       
+            x, y = x+template["SEQ.RELOFF.X"][k], y+template["SEQ.RELOFF.Y"][k]  # cumulative offsets
             fib = plt.Circle((x, y), fiber_fov, edgecolor=sc_c, facecolor="None", ls = sc_ls)
             ax.add_patch(fib)
-        sep, pa = round(math.sqrt(x**2+y**2), 2), round(math.atan2(x, y)/math.pi*180, 2)
-        txt = "$(\Delta{{}}\mathrm{{RA}}, \Delta{{}}\mathrm{{DEC}}) = ({}\,\mathrm{{mas}}, {}\,\mathrm{{mas}})$\n".format(x, y)
-        txt = txt + "$(\mathrm{{PA}}, \mathrm{{SEP}}) = ({}\,\mathrm{{deg}}, {}\,\mathrm{{mas}})$ \n".format(pa, sep)
-        
+            sep, pa = round(math.sqrt(x**2+y**2), 2), round(math.atan2(x, y)/math.pi*180, 2)
+            pos.append([x, y, pa, sep])
+        txt = "$(\Delta{{}}\mathrm{{RA}}, \Delta{{}}\mathrm{{DEC}})$ ="
+        for p in pos:
+            txt = txt+" ({}, {})".format(p[0], p[1])
+        txt = txt + "\n$(\mathrm{{PA}}, \mathrm{{SEP}})$ ="
+        for p in pos:
+            txt = txt+" ({}, {}) ".format(p[2], p[3])
+        txt = txt+"\n"
     dit, ndit, ndit_sky = template["DET2.DIT"], template["DET2.NDIT.OBJECT"], template["DET2.NDIT.SKY"]
     exptime = 0
     exptime_sky = 0

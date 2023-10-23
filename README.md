@@ -10,20 +10,20 @@
 ## How to use?
 We suggest to start by making a copy of one of the examples provided as a first draft of your yml. You can use the "generate" option for this:
 ```python
-create_obs.py generate=dual_on file=path/to/output/yml
+create_obs.py --generate dual_on path/to/output/yml
 ```
 "generate" can be one of dual_on, dual_off, dual_off_calib, dual_wide_off, dual_wide_on or single_on.
 
 Then edit the YML to fit your observing strategy, and once you are done, run the create_obs.py script to convert it to OBs on P2:
 ```python
-create_obs.py file=path/to/yml
+create_obs.py path/to/yml
 ```
 
 You will be asked to provide your P2 credentials, and a summary plot of each OB will displayed. Just click on one of the upper right buttons to send it to P2 or cancel. 
 
 If you don´t want to be bothered with the plots, use the --nogui option:
 ```python
-create_obs.py file=path/to/yml --nogui
+create_obs.py path/to/yml --nogui
 ```
 The OBs will be uploaded to P2 without further verification.
 
@@ -42,11 +42,11 @@ create_obs.py --dit
 
 --nogui to skip the plot and confirmation part (OB directly uploaded to P2)
 
-fov=x to increase the fov in the plot
+--fov x to increase the fov in the plot
 
-bg=path/to/image to add an image to the background of the plot
+--bg path/to/image to add an image to the background of the plot
 
-generate=xx to quickly generate a first yml
+--generate xx to quickly generate a first yml
 
 and more! For further details:
 ```python
