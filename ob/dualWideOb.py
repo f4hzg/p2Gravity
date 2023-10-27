@@ -39,6 +39,7 @@ class DualWideOb(ObservingBlock):
         the setup dict attribute will also by used to bypass some default values if required
         """        
         self.acquisition = tpl.DualWideAcq()
+        self._fill_magnitudes(self.yml)        
         # set target names. in this mode, both sc_target and ft_target are required
         if "ft_target" in self.yml:
             self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]

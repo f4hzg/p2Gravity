@@ -16,6 +16,7 @@ setup:
   INS.SPEC.POL: "OUT"          # Polarisation. OUT or IN
   ISS.BASELINE: ["UTs"]        # baselines (small, large, or UTs)
   ISS.VLTITYPE: ["astrometry"] # snapshot, imaging, time-series, or astrometry
+  SEQ.MET.MODE: FAINT          # the mode for the metrology laser. Can be FAINT, ON, or OFF    
   concatenation: HR8799_seq    # if not empty, a concatenation with this name will be created and all OBs put in here
   constraints:                 # additional constraints
     skyTransparency: "Variable, thin cirrus" 
@@ -32,7 +33,10 @@ ObservingBlocks:
     # in this first OB, we'll observe the planet using whereistheplanet to set the coordinates
     description: on-planet off-axis observations  # a short description of what this OB is
     mode: dual_off                                # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
-    target: HR8799                                # this target name will be resolved in simbad to populate various fields. 
+    target: HR8799                                # this target name will be resolved in simbad to populate various fields.
+#    g_mag: 6.59                                   # if the magnitudes are not available in Simbad, an error will be thrown
+#    h_mag: 5.69                                   # unless you specify them here. Note that when specified, these values will always 
+#    k_mag: 5.60                                   # supersede any values retrieved from Simbad    
     coord_syst: whereistheplanet                  # in dual-off, the coordinates are set at acquisition. coord_syst is radec, pasep, or whereistheplanet
     coord: HR8799b                                # units are mas and deg. just the target name if coord_syst=whereistheplanet
     SEQ.FT.MODE: 1

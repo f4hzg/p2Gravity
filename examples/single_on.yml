@@ -27,6 +27,9 @@ ObservingBlocks:
     description: HD142527 binary in single-field  # a short description of what this OB is
     mode: single_on                               # can be dual_wide_on, dual_wide_off, dual_on, dual_off, single_on, or single_off
     target: HD142527                              # this target name will be resolved in simbad to populate various fields
+#    g_mag: 6.59                                   # if the magnitudes are not available in Simbad, an error will be thrown
+#    h_mag: 5.69                                   # unless you specify them here. Note that when specified, these values will always 
+#    k_mag: 5.60                                   # supersede any values retrieved from Simbad    
     ISS.VLTITYPE: ["snapshot"] # snapshot, imaging, time-series, or astrometry	         
     objects:
     # objects is a list fiber pointings and exposure settings. In single-on, there should be only one

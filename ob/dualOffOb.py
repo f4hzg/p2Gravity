@@ -37,6 +37,7 @@ class DualOffOb(ObservingBlock):
         the setup dict attribute will also by used to bypass some default values if required
         """        
         self.acquisition = tpl.DualOffAxisAcq()
+        self._fill_magnitudes(self.yml)
         # set target names
         if "ft_target" in self.yml:
             self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]

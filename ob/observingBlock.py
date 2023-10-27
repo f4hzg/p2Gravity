@@ -18,7 +18,7 @@ from astropy.coordinates import SkyCoord
 from abc import ABC, abstractmethod
 
 # add some votable fields to get the magnitudes, proper motion, and plx required in acq template
-Simbad.add_votable_fields('flux(V)')
+Simbad.add_votable_fields('flux(G)')
 Simbad.add_votable_fields('flux(K)')
 Simbad.add_votable_fields('flux(H)')
 Simbad.add_votable_fields('flux(R)')
@@ -44,6 +44,23 @@ class ObservingBlock(object):
         self.target = dict({})
         self.ob_type = "ObservingBlock"
         self.iscalib = iscalib
+        return None
+
+    def _fill_magnitudes(self, yml):
+        """ check if magnitudes are in the given yml. If so, put them in their proper locations in acq template """
+        if "k_mag" in yml:
+            if "SEQ.INS.SOBJ.MAG" in self.acquisition:
+                self.acquisition["SEQ.INS.SOBJ.MAG"] = self.yml["k_mag"]
+            if "SEQ.FT.ROBJ.MAG" in self.acquisition:                
+                self.acquisition["SEQ.FT.ROBJ.MAG"] = self.yml["k_mag"]
+        if "h_mag" in yml:
+            if "SEQ.FT.ROBJ.HMAG" in self.acquisition:                            
+                self.acquisition["SEQ.INS.SOBJ.HMAG"] = self.yml["h_mag"]
+            if "SEQ.FT.ROBJ.HMAG" in self.acquisition:                                
+                self.acquisition["SEQ.FT.ROBJ.HMAG"] = self.yml["h_mag"]
+        if "g_mag" in yml:
+            if "COU.GS.MAG" in self.acquisition:                            
+                self.acquisition["COU.GS.MAG"] = self.yml["g_mag"]
         return None
     
     def _populate_from_simbad(self, target_table, target_name = ""):

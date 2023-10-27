@@ -21,6 +21,7 @@ class SingleOffOb(ObservingBlock):
         the setup dict attribute will also by used to bypass some default values if required
         """        
         self.acquisition = tpl.SingleOffAxisAcq()
+        self._fill_magnitudes(self.yml)        
         self.acquisition["SEQ.FT.ROBJ.NAME"] = self.objects["star"]["name"]
         first_object_label = [object_label for object_label in self.objects if object_label != "star"][0]
         self.acquisition["SEQ.INS.SOBJ.NAME"] = self.objects[first_object_label]["name"]
