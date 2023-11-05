@@ -32,7 +32,11 @@ class DualObsSwap(Template):
         self.template_type = 'science'
         self["SEQ.FT.MODE"] = "AUTO"
         return None
-
+    
+    def populate_from_yml(self, yml):
+        if "SEQ.FT.MODE" in yml:
+            self["SEQ.FT.MODE"] = yml["SEQ.FT.MODE"]
+        return None
 
 class SingleObsExp(ScienceTemplate):
     """
@@ -55,7 +59,10 @@ class SingleObsExp(ScienceTemplate):
             self.template_name = 'GRAVITY_single_obs_exp'
             self.template_type = 'science'          
         return None
-    
+
+    def populate_from_yml(self, yml):
+        super(SingleObsExp, self).populate_from_yml(yml)            
+        return None    
 
 class DualObsExp(ScienceTemplate):
     """
