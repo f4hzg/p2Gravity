@@ -75,12 +75,12 @@ class AcquisitionTemplate(Template):
             common.printwar("Parallax not found on Simbad for target {}".format(target_name))
         if self["SEQ.INS.SOBJ.MAG"] is None:
             try:
-                self["SEQ.INS.SOBJ.MAG"] = round(target_table['FLUX_K'][0].item(), 2)
+                self["SEQ.INS.SOBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
         if self["COU.GS.MAG"] is None:
-            try:            
-                self["COU.GS.MAG"] = round(target_table['FLUX_G'][0].item(), 2)     
+            try:
+                self["COU.GS.MAG"] = round(target_table['FLUX_G'][0], 2)     
             except:
                 common.printerr("G band magnitude not found on Simbad for target {}. Please specify a G band mag using 'g_mag: xx' in the yml. See the examples.'".format(target_name))
         return None
@@ -121,7 +121,7 @@ class SingleOnAxisAcq(AcquisitionTemplate):
         super(SingleOnAxisAcq, self)._populate_from_simbad(target_table, target_name)
         if self["SEQ.INS.SOBJ.HMAG"] is None:
             try:
-                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify an H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         return None
@@ -158,7 +158,7 @@ class SingleOffAxisAcq(AcquisitionTemplate):
         super(SingleOffAxisAcq, self)._populate_from_simbad(target_table, target_name)
         if self["SEQ.INS.SOBJ.HMAG"] is None:
             try:
-                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify an H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         return None
@@ -212,12 +212,12 @@ class DualOnAxisAcq(AcquisitionTemplate):
         super(DualOnAxisAcq, self)._populate_from_simbad(target_table, target_name)
         if self["SEQ.FT.ROBJ.MAG"] is None:
             try:        
-                self["SEQ.FT.ROBJ.MAG"] = round(target_table['FLUX_K'][0].item(), 2)
+                self["SEQ.FT.ROBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
         if self["SEQ.FT.ROBJ.HMAG"] is None:
             try:
-                self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+                self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         return None    
@@ -329,12 +329,12 @@ class DualWideAcq(AcquisitionTemplate):
         self["SEQ.FT.ROBJ.NAME"] = target_name
         if self["SEQ.FT.ROBJ.MAG"] is None:
             try:        
-                self["SEQ.FT.ROBJ.MAG"] = round(target_table['FLUX_K'][0].item(), 2)
+                self["SEQ.FT.ROBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
         if self["SEQ.FT.ROBJ.HMAG"] is None:
             try:
-                self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+                self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         self["SEQ.FT.ROBJ.ALPHA"] = coord.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)        
@@ -356,12 +356,12 @@ class DualWideAcq(AcquisitionTemplate):
         self["SEQ.INS.SOBJ.NAME"] = target_name
         if self["SEQ.INS.SOBJ.MAG"] is None:
             try:        
-                self["SEQ.INS.SOBJ.MAG"] = round(target_table['FLUX_K'][0].item(), 2)
+                self["SEQ.INS.SOBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
         if self["SEQ.INS.SOBJ.HMAG"] is None:
             try:
-                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0].item(), 2)
+                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify an H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         try:
