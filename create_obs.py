@@ -14,12 +14,7 @@ import p2api
 from getpass import getpass
 
 # ruamel or yaml to read config yml file
-try:
-    import ruamel.yaml as yaml
-    RUAMEL = True
-except: # if ruamel not available, switch back to pyyaml, which does not handle comments properly
-    import yaml
-    RUAMEL = False
+import ruamel.yaml as yaml
     
 # import this package
 import p2Gravity as p2g
@@ -37,7 +32,7 @@ Generate and send GRAVITY OBs to P2
 """)
 
 # required arguments are the path to the folder containing the data, and the path to the config yml file to write 
-parser.add_argument('file', type=str, help="the path the to input YAML configuration file (or output when using --generate).")
+parser.add_argument('file', type=str, nargs="?", help="the path the to input YAML configuration file (or output when using --generate).")
 
 # some optional arguments
 parser.add_argument("--generate", metavar="TYPE", type=str, default=argparse.SUPPRESS, choices=["dual_on", "dual_off", "dual_off_calib", "dual_wide_off", "dual_wide_on", "single_on"], nargs = 1,
@@ -73,12 +68,31 @@ parser.add_argument("--dit", metavar="EMPTY or TRUE/FALSE", type=bool, nargs="?"
 # load arguments into a dictionnary
 args = parser.parse_args()
 dargs = vars(args) # to treat as a dictionnary
-    
+
+WHEREAMI = os.path.dirname(__file__)
+
+# if DIT keyworg, show image
+if "dit" in dargs:
+    fig = plt.figure(figsize=(15, 8))
+    ax = fig.add_subplot(111)
+    ax.imshow(mpimg.imread(WHEREAMI+'/selecting_dit_values.jpg'))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.get_xaxis().set_ticks([])
+    ax.get_yaxis().set_ticks([])
+    plt.tight_layout()
+    plt.show()
+    sys.exit()
+else:
+    if dargs["file"] is None:
+        raise Exception("The following arguments are required: file")
+
 # get filename and load yml
 filename = dargs["file"]
 
 # is this a "generate" command?
-WHEREAMI = os.path.dirname(__file__)
 if "generate" in dargs:
     IS_GENERATE = True
     genfile = "{}/examples/{}.yml".format(WHEREAMI, dargs["generate"][0])
@@ -94,9 +108,11 @@ if "generate" in dargs:
     sys.exit()
 
 if not(os.path.isfile(dargs["file"])):
-    printerr("{} not found, or is not a file".format(dargs["file"]))    
-cfg = yaml.load(open(filename, "r"), Loader=yaml.Loader)
+    printerr("{} not found, or is not a file".format(dargs["file"]))
 
+# LOAD CONFIG FILE
+loader = yaml.YAML(typ = "rt")
+cfg = loader.load(open(filename, "r"))
         
 if "fov" in dargs:
     fov = int(dargs["fov"])
