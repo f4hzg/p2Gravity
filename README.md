@@ -11,7 +11,9 @@
 Make sure you have installed all the required packages, in particular ruamel.yaml
 
 Just clone or download the repository. You should then be able to execute the script create_obs.py
-```python p2Gravity/create_obs.py --help```
+```python
+python p2Gravity/create_obs.py --help
+```
 
 ## How to use?
 We suggest to start by making a copy of one of the examples provided as a first draft of your yml. You can use the "generate" option for this:
@@ -45,7 +47,7 @@ python p2Gravity/create_obs.py kenobi.yml --demo
 ```
 
 Be aware that the P2 demo server is *PUBLICLY* available here:
-[P2 demo server](https://www.eso.org/p2demo/).x
+[P2 demo server](https://www.eso.org/p2demo/).
 
 ## Optional arguments:
 --help to print the doc message and exit
