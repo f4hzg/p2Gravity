@@ -51,18 +51,27 @@ Be aware that the P2 demo server is *PUBLICLY* available here:
 
 ## Time constraints
 
-Absolute time constrains can be added on a OB per OB basis. This is done by adding a list of (from, to) tuple in the OB yml description. For example:
+Absolute time constrains can be added to the OBs by providing a list of (from, to) tuple in the yml description of the setup. Here is an example for a setup requesting observations only in September (2020 or 2021):
 
 ``` yaml
-ObservingBlocks:
-  OB1_with_ATC:
-    description: An OB in with Absolute Time Constraints
-    utctime:
-      - ['2024-11-25T00:00', '2024-11-28T23:59']
-      - ['2024-12-23T00:00', '2024-12-30T23:59']        
-    # and the rest follows the usual format
-    mode: dual_on
-#    etc.
+setup:
+  run_id: 60.A-9252(M)         # id of the run to upload the OB in the correct place
+  date: 2023-07-14             # Required. But only useful if 'whereistheplanet' is used to predict position of the companion
+  folder: P2GRAVITY_examples   # Folder in P2 where the OB will be uploaded. 
+  INS.SPEC.RES: "HIGH"         # spectral resolution. LOW, MED, or HIGH
+  INS.SPEC.POL: "OUT"          # Polarisation. OUT or IN
+  ISS.BASELINE: ["UTs"]        # baselines (small, large, or UTs)
+  ISS.VLTITYPE: ["astrometry"] # snapshot, imaging, time-series, or astrometry
+  SEQ.MET.MODE: FAINT          # the mode for the metrology laser. Can be FAINT, ON, or OFF  
+  concatenation: none          # if not none, a concatenation with this name will be created and all OBs put in here
+  constraints:                 # additional constraints
+    skyTransparency: "Variable, thin cirrus" 
+    airmass: 1.6
+    moonDistance: 10
+    atm: 85%
+  absoluteTimeConstraints:
+    - ['2020-09-01T00:00', '2020-09-30T23:59']
+    - ['2021-09-01T00:00', '2021-09-30T23:59']
 ```
 
 

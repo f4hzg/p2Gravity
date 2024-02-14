@@ -174,9 +174,9 @@ class ObservingBlock(object):
         for template in self.templates:
             template.p2_update(api)
         # add time constraints if required
-        if "utctime" in self.yml:
-            if not(self.yml["utctime"] is None):
-                self.p2_add_utctime(api, self.yml["utctime"])
+        if "absoluteTimeConstraints" in self.setup:
+            if not(self.setup["absoluteTimeConstraints"] is None):
+                self.p2_add_utctime(api, self.setup["absoluteTimeConstraints"])
         return None
     
 
