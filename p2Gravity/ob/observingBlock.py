@@ -147,6 +147,16 @@ class ObservingBlock(object):
             template.p2_create(api, self.ob_id)        
         return None
 
+    def p2_add_utctime(self, api, intervals):
+        """
+        Add time constraints to the OB, given as a list of tuples (from, to)
+        with from and to utc strings
+        """
+        constraints = [{"from": i[0], "to": i[1]} for i in intervals] # ESO format
+        absTCs, atcVersion = api.getAbsoluteTimeConstraints(self.ob_id)
+        absTCs, atcVersion = api.saveAbsoluteTimeConstraints(self.ob_id, constraints, atcVersion)
+        return None
+                                                             
     def p2_update(self, api):
         """
         Update info of the OB on P2
@@ -163,6 +173,10 @@ class ObservingBlock(object):
         self.acquisition.p2_update(api)
         for template in self.templates:
             template.p2_update(api)
+        # add time constraints if required
+        if "utctime" in self.yml:
+            if not(self.yml["utctime"] is None):
+                self.p2_add_utctime(api, self.yml["utctime"])
         return None
     
 

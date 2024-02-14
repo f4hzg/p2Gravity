@@ -49,7 +49,25 @@ python p2Gravity/create_obs.py kenobi.yml --demo
 Be aware that the P2 demo server is *PUBLICLY* available here:
 [P2 demo server](https://www.eso.org/p2demo/).
 
+## Time constraints
+
+Absolute time constrains can be added on a OB per OB basis. This is done by adding a list of (from, to) tuple in the OB yml description. For example:
+
+``` yaml
+ObservingBlocks:
+  OB1_with_ATC:
+    description: An OB in with Absolute Time Constraints
+    utctime:
+      - ['2024-11-25T00:00', '2024-11-28T23:59']
+      - ['2024-12-23T00:00', '2024-12-30T23:59']        
+    # and the rest follows the usual format
+    mode: dual_on
+#    etc.
+```
+
+
 ## Optional arguments:
+
 --help to print the doc message and exit
 
 --dit to show a plot form the template manual for optimal dit selection
