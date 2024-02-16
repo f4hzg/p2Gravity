@@ -54,7 +54,7 @@ class DualOffOb(ObservingBlock):
         # use the mean of templates to set the direction of acquisition
         dx = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates if tpl.template_name == "GRAVITY_dual_obs_exp"]).mean()
         dy = np.array([tpl["SEQ.RELOFF.Y"][0] for tpl in self.templates if tpl.template_name == "GRAVITY_dual_obs_exp"]).mean()
-        self.acquisition["SEQ.INS.SOBJ.X"] = round(dx/np.sqrt(dx**2+dy**2), 2) # 1 mas total sep
+        self.acquisition["SEQ.INS.SOBJ.X"] = round(dx/np.sqrt(dx**2+dy**2), 2) # 1 mas total sepx
         self.acquisition["SEQ.INS.SOBJ.Y"] = round(dy/np.sqrt(dx**2+dy**2), 2)                                           
         # last step is to populate with setup, and then star object itself, which can be used to bypass any other setup
         self.acquisition.populate_from_yml(self.setup)
@@ -65,7 +65,7 @@ class DualOffOb(ObservingBlock):
                 self.acquisition["SEQ.INS.SOBJ.Y"] = round(self.yml["coord"][1], 2)
             elif self.yml["coord_syst"] == "pasep":
                 pa, sep = self.yml["coord"]
-                ra, dec = math.sin(pa/190.8*math.pi)*sep, math.cos(pa/190.8*math.pi)*sep
+                ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
                 self.acquisition["SEQ.INS.SOBJ.X"] = round(ra, 2)
                 self.acquisition["SEQ.INS.SOBJ.Y"] = round(dec, 2)
             elif self.yml["coord_syst"] == "whereistheplanet":

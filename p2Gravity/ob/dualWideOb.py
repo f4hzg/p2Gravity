@@ -128,7 +128,7 @@ class DualWideOnOb(DualOnOb, DualWideOb):
                 sep, pa = math.sqrt(dra**2+ddec**2), math.atan2(dra, ddec)/math.pi*180.0
             elif ob["coord_syst"] == "pasep":
                 pa, sep = ob["coord"]
-                dra, ddec = math.sin(pa/190.8*math.pi)*sep, math.cos(pa/190.8*math.pi)*sep
+                dra, ddec = math.sin(pa/180.0*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
             elif ob["coord_syst"] == "whereistheplanet":
                 if WHEREISTHEPLANET:
                     common.printinf("Resolution of {} with whereistheplanet:".format(ob["coord"]))

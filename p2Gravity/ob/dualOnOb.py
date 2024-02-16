@@ -81,7 +81,7 @@ class DualOnOb(ObservingBlock):
                         template["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))
                     elif obj_yml["coord_syst"] == "pasep":
                         pa, sep = obj_yml["coord"]
-                        ra, dec = math.sin(pa/190.8*math.pi)*sep, math.cos(pa/190.8*math.pi)*sep
+                        ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sepx
                         template["SEQ.RELOFF.X"].append(round(ra, 2))
                         template["SEQ.RELOFF.Y"].append(round(dec, 2))
                     elif obj_yml["coord_syst"] == "whereistheplanet":
