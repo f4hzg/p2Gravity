@@ -80,23 +80,57 @@ class DualOffOb(ObservingBlock):
                 common.printerr("Unknown coordinate system {}".format(self.yml["coord_syst"]))
         return None
 
-    def _generate_template(self, obj_yml, exposures, reloff_x = None, reloff_y = None):
+    def _generate_template(self, exposures):
         """
         generate the template from the given yml dict and exposure 
         """        
         if exposures == "swap":
             template = tpl.DualObsSwap()            
             template.populate_from_yml(self.yml)
-            template.populate_from_yml(obj_yml)            
         else:
-            template = tpl.DualObsExp(iscalib = self.iscalib)
-            template.populate_from_yml(self.yml)            
-            template.populate_from_yml(obj_yml)
-            template["SEQ.OBSSEQ"] = exposures            
-            if not(reloff_x is None):
-                template["SEQ.RELOFF.X"] = reloff_x
-            if not(reloff_y is None):                
-                template["SEQ.RELOFF.Y"] = reloff_y
+            template = tpl.DualObsExp(iscalib = self.iscalib)            
+            template["SEQ.RELOFF.X"] = []
+            template["SEQ.RELOFF.Y"] = []            
+            exposures_ESO = ""                
+            for exposure in exposures:
+                if exposure.lower() == "sky":
+                    template["SEQ.RELOFF.X"].append(0.)
+                    template["SEQ.RELOFF.Y"].append(0.)
+                    exposures_ESO = exposures_ESO + " S"
+                else:
+                    if not(exposure  in self.objects):
+                        printerr("Object with label {} from sequence not found in yml".format(exposure))
+                    obj_yml = self.objects[exposure]
+                    if "coord_syst" in obj_yml:
+                        if obj_yml["coord_syst"] == "radec":
+                            template["SEQ.RELOFF.X"].append(round(obj_yml["coord"][0], 2))
+                            template["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))                          
+                        elif obj_yml["coord_syst"] == "pasep":
+                            pa, sep = obj_yml["coord"]
+                            ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
+                            template["SEQ.RELOFF.X"].append(round(obj_yml["coord"][0], 2))
+                            template["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))
+                        elif obj_yml["coord_syst"] == "whereistheplanet":
+                            if WHEREISTHEPLANET:
+                                common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
+                                ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], self.setup["date"])
+                                template["SEQ.RELOFF.X"].append(round(obj_yml["coord"][0], 2))
+                                template["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))                                                                   
+                            else: 
+                                common.printerr("whereistheplanet used as a coord_syst, but whereistheplanet module could not be loaded")
+                        else:
+                            common.printerr("Unknown coordinate system {}".format(obj_yml["coord_syst"]))
+                    else:
+                        template["SEQ.RELOFF.X"].append(0.)
+                        template["SEQ.RELOFF.Y"].append(0.)                            
+                    # add the exposure in the ESO format
+                    exposures_ESO = exposures_ESO + " O"
+                    # don't forget that these offsets are cumulative, so we need to
+                    # remove the previous cumsum from each newly calculated offset
+                    template["SEQ.RELOFF.X"][-1] = template["SEQ.RELOFF.X"][-1] - np.sum(np.array(template["SEQ.RELOFF.X"][:-1]))
+                    template["SEQ.RELOFF.Y"][-1] = template["SEQ.RELOFF.Y"][-1] - np.sum(np.array(template["SEQ.RELOFF.Y"][:-1]))            
+                    template.populate_from_yml(obj_yml)
+            template["SEQ.OBSSEQ"] = exposures_ESO            
         return template
 
     def generate_templates(self):
@@ -111,51 +145,18 @@ class DualOffOb(ObservingBlock):
         for seq in sequences:
             exposures = seq.rstrip().lstrip().split(" ")
             if exposures == ["swap"]: # no test in this case
-                self.templates.append(self._generate_template(obj_yml, "swap"))
+                self.templates.append(self._generate_template("swap"))
             else:
+                if len(set([dummy for dummy in exposures if dummy != "sky"])) > 1: # more than one object which is not sky
+                    if len(set([self.objects[dummy]["DET2.DIT"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.DIT. Please split them on different lines.".format(exposures, self.label))
+                    if len(set([self.objects[dummy]["DET2.NDIT.SKY"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.NDIT.SKY.. Please split them on different lines.".format(exposures, self.label))
+                    if len(set([self.objects[dummy]["DET2.NDIT.OBJECT"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.NDIT.OBJECT. Please split them on different lines.".format(exposures, self.label))
                 if not("sky" in exposures):
                     common.printwar("No sky in sequence {} in OB '{}'".format(exposures, self.label))
-                reloff_x = []
-                reloff_y = []
-                exposures_ESO = ""                
-                for exposure in exposures:
-                    if exposure.lower() == "sky":
-                        reloff_x.append(0)
-                        reloff_y.append(0)
-                        exposures_ESO = exposures_ESO + " S"
-                    else:
-                        if not(exposure  in self.objects):
-                            printerr("Object with label {} from sequence not found in yml".format(exposure))
-                        obj_yml = self.objects[exposure]
-                        if "coord_syst" in obj_yml:
-                            if obj_yml["coord_syst"] == "radec":
-                                reloff_x.append(round(obj_yml["coord"][0], 2))
-                                reloff_y.append(round(obj_yml["coord"][1], 2))                          
-                            elif obj_yml["coord_syst"] == "pasep":
-                                pa, sep = obj_yml["coord"]
-                                ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
-                                reloff_x.append(round(obj_yml["coord"][0], 2))
-                                reloff_y.append(round(obj_yml["coord"][1], 2))
-                            elif obj_yml["coord_syst"] == "whereistheplanet":
-                                if WHEREISTHEPLANET:
-                                    common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
-                                    ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], self.setup["date"])
-                                    reloff_x.append(round(obj_yml["coord"][0], 2))
-                                    reloff_y.append(round(obj_yml["coord"][1], 2))                                                                   
-                                else: 
-                                    common.printerr("whereistheplanet used as a coord_syst, but whereistheplanet module could not be loaded")
-                            else:
-                                common.printerr("Unknown coordinate system {}".format(obj_yml["coord_syst"]))
-                        else:
-                            reloff_x.append(0.)
-                            reloff_y.append(0.)                            
-                        # add the exposure in the ESO format
-                        exposures_ESO = exposures_ESO + " O"
-                        # don't forget that these offsets are cumulative, so we need to
-                        # remove the previous cumsum from each newly calculated offset
-                        reloff_x[-1] = reloff_x[-1] - np.sum(np.array(reloff_x[:-1]))
-                        reloff_y[-1] = reloff_y[-1] - np.sum(np.array(reloff_y[:-1]))
-                self.templates.append(self._generate_template(obj_yml, exposures_ESO, reloff_x = reloff_x, reloff_y = reloff_y))                
+                self.templates.append(self._generate_template(exposures))
         # now we can generate acquisition                
         self._generate_acquisition()
         return None

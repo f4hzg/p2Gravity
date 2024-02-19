@@ -74,6 +74,8 @@ class DualOnOb(ObservingBlock):
                 template["SEQ.RELOFF.Y"].append(0)                                                
                 exposures_ESO = exposures_ESO + " S"
             else:
+                if not(exposure in self.objects):
+                    printerr("Object with label {} from sequence not found in yml".format(exposure))                
                 obj_yml = self.objects[exposure]
                 if "coord_syst" in obj_yml:
                     if obj_yml["coord_syst"] == "radec":
