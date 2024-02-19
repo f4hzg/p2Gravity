@@ -140,8 +140,10 @@ class DualOffOb(ObservingBlock):
         # split sequences on swaps:
         sequences = []
         for seq in self.yml["sequence"]:
-            for dummy in re.split("\W(swap)", seq.rstrip().lstrip()):
-                sequences.append(dummy)
+            for dummy in re.split("(\W|\A)(swap)", seq.rstrip().lstrip()):
+                dummy = dummy.rstrip().lstrip()
+                if dummy != "":
+                    sequences.append(dummy)
         for seq in sequences:
             exposures = seq.rstrip().lstrip().split(" ")
             if exposures == ["swap"]: # no test in this case
