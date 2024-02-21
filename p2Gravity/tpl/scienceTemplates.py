@@ -124,21 +124,21 @@ class DualObsExp(ScienceTemplate):
                 obj_yml = objects_yml[exposure]
                 if "coord_syst" in obj_yml:
                     if obj_yml["coord_syst"] == "radec":
-                        self["SEQ.RELOFF.X"].append(round(obj_yml["coord"][0], 2))
-                        self["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))
+                        self["SEQ.RELOFF.X"].append(obj_yml["coord"][0])
+                        self["SEQ.RELOFF.Y"].append(obj_yml["coord"][1])
                     elif obj_yml["coord_syst"] == "pasep":
                         pa, sep = obj_yml["coord"]
                         ra, dec = np.sin(np.deg2rad(pa))*sep, np.cos(np.deg2rad(pa))*sep
-                        self["SEQ.RELOFF.X"].append(round(ra, 2))
-                        self["SEQ.RELOFF.Y"].append(round(dec, 2))
+                        self["SEQ.RELOFF.X"].append(ra)
+                        self["SEQ.RELOFF.Y"].append(dec)
                     elif obj_yml["coord_syst"] == "whereistheplanet":
                         if WHEREISTHEPLANET:
                             common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
                             if date is None:
                                 raise Exception("Date not given for Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))                                
                             ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], date)
-                            self["SEQ.RELOFF.X"].append(round(ra[0], 2))
-                            self["SEQ.RELOFF.Y"].append(round(dec[0], 2))
+                            self["SEQ.RELOFF.X"].append(ra[0])
+                            self["SEQ.RELOFF.Y"].append(dec[0])
                         else: 
                             common.printerr("whereistheplanet used as a coord_syst, but whereistheplanet module could not be loaded")
                     else:
@@ -150,8 +150,9 @@ class DualObsExp(ScienceTemplate):
                 exposures_ESO = exposures_ESO + " O"                            
                 # don't forget that these offsets are cumulative, so we need to
                 # remove the previous cumsum from each newly calculated offset
-                self["SEQ.RELOFF.X"][-1] = self["SEQ.RELOFF.X"][-1] - np.sum(np.array(self["SEQ.RELOFF.X"][:-1]))
-                self["SEQ.RELOFF.Y"][-1] = self["SEQ.RELOFF.Y"][-1] - np.sum(np.array(self["SEQ.RELOFF.Y"][:-1]))
+                # also round to 2 digits
+                self["SEQ.RELOFF.X"][-1] = round(self["SEQ.RELOFF.X"][-1] - np.sum(np.array(self["SEQ.RELOFF.X"][:-1])), 2)
+                self["SEQ.RELOFF.Y"][-1] = round(self["SEQ.RELOFF.Y"][-1] - np.sum(np.array(self["SEQ.RELOFF.Y"][:-1])), 2)
                 self.populate_from_yml(obj_yml)
         print(self)
         self["SEQ.OBSSEQ"] = exposures_ESO

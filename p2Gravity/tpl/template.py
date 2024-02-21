@@ -44,11 +44,6 @@ class Template(dict):
             # add 0s to match length
             self["SEQ.RELOFF.X"] = self["SEQ.RELOFF.X"]+[0]*(nobj-len(self["SEQ.RELOFF.X"]))
             self["SEQ.RELOFF.Y"] = self["SEQ.RELOFF.Y"]+[0]*(nobj-len(self["SEQ.RELOFF.X"]))
-        # json.dumps used by eso p2 api seems to have issues dealing with np.float32. So we'll
-        # do a quick check here, and replace those types
-        for p in self.params:
-            if isinstance(self.params[p], np.float32) or isinstance(self.params[p], np.float64):
-                self[p] = float(self[p])                
         tpl, version = api.setTemplateParams(self.ob_id, self.tpl, self.params, self.version)
         self.version = version
         self.tpl = tpl
