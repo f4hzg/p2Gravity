@@ -101,7 +101,7 @@ class DualObsExp(ScienceTemplate):
         self["SEQ.RELOFF.Y"] = [0]
         return None
 
-    def populate_offsets_from_object_yml(self, exposures, objects_yml):
+    def populate_offsets_from_object_yml(self, exposures, objects_yml, date = None):
         """
         Calculate the correct expoure sequence (ESO format) and relative offsets
         from a list like "A B A B" and a dict of object ymls {"A": yml, "B": yml}
@@ -134,7 +134,9 @@ class DualObsExp(ScienceTemplate):
                     elif obj_yml["coord_syst"] == "whereistheplanet":
                         if WHEREISTHEPLANET:
                             common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
-                            ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], self.setup["date"])
+                            if date is None:
+                                raise Exception("Date not given for Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))                                
+                            ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], date)
                             self["SEQ.RELOFF.X"].append(round(ra[0], 2))
                             self["SEQ.RELOFF.Y"].append(round(dec[0], 2))
                         else: 

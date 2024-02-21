@@ -10,15 +10,6 @@ from .observingBlock import ObservingBlock
 import re
 import numpy as np
 
-# to resolve planet position
-try:
-    import whereistheplanet
-    WHEREISTHEPLANET = True    
-except:
-    common.printwar("Cannot load whereistheplanet module. 'whereistheplanet' will not be available as a coord_syst.")
-    WHEREISTHEPLANET = False    
-
-
 class DualOffOb(ObservingBlock):
     def __init__(self, *args, **kwargs):
         """
@@ -86,7 +77,7 @@ class DualOffOb(ObservingBlock):
             template.populate_from_yml(self.yml)
         else:
             template = tpl.DualObsExp(iscalib = self.iscalib)
-            template.populate_offsets_from_object_yml(exposures, self.objects)
+            template.populate_offsets_from_object_yml(exposures, self.objects, date = self.setup["date"])
         return template
 
     def generate_templates(self):

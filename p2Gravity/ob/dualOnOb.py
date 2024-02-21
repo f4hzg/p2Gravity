@@ -54,7 +54,7 @@ class DualOnOb(ObservingBlock):
         geneate the template from the given yml dict and exposure 
         """
         template = tpl.DualObsExp(iscalib = self.iscalib)
-        template.populate_offsets_from_object_yml(exposures, self.objects)
+        template.populate_offsets_from_object_yml(exposures, self.objects, date = self.setup["date"])
         return template
 
     def generate_templates(self):
