@@ -107,7 +107,6 @@ class DualObsExp(ScienceTemplate):
         from a list like "A B A B" and a dict of object ymls {"A": yml, "B": yml}
         """
         # clear offsets and exposures
-        print(exposures)
         self["SEQ.RELOFF.X"] = []
         self["SEQ.RELOFF.Y"] = []
         exposures_ESO = "" 
