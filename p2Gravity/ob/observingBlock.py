@@ -125,14 +125,15 @@ class ObservingBlock(object):
         target_table = self.simbad_get_table(target_name)
         self.target = dict({})
         self.target["name"] = target_name        
-        # get the guide star (same as target, or different if given)
-        gs_name = target_name
-        gs_table = target_table
+        # get the guide star if given
+        gs_table = None
+        gs_name = None
         if "guide_star" in ob:
             if not(ob["guide_star"] is None):
                 gs_name = ob["guide_star"]
-                gs_table = self.simbad_get_table(gs_name)
-        self.acquisition.populate_from_simbad(target_table, gs_table, target_name = target_name, gs_name = gs_name)
+                if not(ob["guide_star"].lower() in ["science", "ft"]):
+                    gs_table = self.simbad_get_table(gs_name)
+        self.acquisition.populate_from_simbad(target_table = target_table, target_name = target_name, gs_table = gs_table, gs_name = gs_name)
         self._populate_from_simbad(target_table, target_name = target_name)        
         return None
 

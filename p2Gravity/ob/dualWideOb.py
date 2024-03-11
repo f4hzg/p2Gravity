@@ -57,7 +57,14 @@ class DualWideOb(ObservingBlock):
 
     def simbad_resolve(self, ob):
         """ For gwide, we need to overwrite this method, as we have 2 targets to resolve"""
-        
+        # get the guide star if given
+        gs_table = None
+        gs_name = None
+        if "guide_star" in ob:
+            if not(ob["guide_star"] is None):
+                gs_name = ob["guide_star"]
+                if not(ob["guide_star"].lower() in ["science", "ft"]):
+                    gs_table = self.simbad_get_table(gs_name)
         # RESOLVE SC TARGET
         target_name = ob["sc_target"]
         common.printinf("Resolving target {} on Simbad".format(target_name))
@@ -70,10 +77,10 @@ class DualWideOb(ObservingBlock):
             stop()
         # populate the "target" tab using the SC target
         self.target = dict({})
-        self.target["name"] = target_name
-        self._populate_from_simbad(target_table, target_name = target_name)
+        self.target["name"] = target_name 
+        self._populate_from_simbad(target_table = target_table, target_name = target_name)
         # populate SC in the acq template
-        self.acquisition._populate_sc_target_from_simbad(target_table, target_name = target_name)
+        self.acquisition._populate_sc_target_from_simbad(target_table = target_table, target_name = target_name, gs_name = gs_name, gs_table = gs_table)
 
         # now we resolve FT target
         target_name = ob["ft_target"]
@@ -86,7 +93,7 @@ class DualWideOb(ObservingBlock):
             printwar("There are multiple results from Simbad. Which one should I use? (1, 2, etc.?)")
             stop()
         # populate FT in the acq template
-        self.acquisition._populate_ft_target_from_simbad(target_table, target_name = target_name)
+        self.acquisition._populate_ft_target_from_simbad(target_table = target_table, target_name = target_name)
         
         return None
 

@@ -44,7 +44,7 @@ class AcquisitionTemplate(Template):
         self["INS.FT.POL"] = "OUT"
         self["INS.SPEC.POL"] = "OUT"
         self["COU.AG.TYPE"] = "ADAPT_OPT"
-        self["COU.AG.GSSOURCE"] = "SCIENCE"
+        self["COU.AG.GSSOURCE"] = "FT"
         self["COU.AG.ALPHA"] = "00:00:00.000"
         self["COU.AG.DELTA"] = "00:00:00.000"
         self["COU.AG.PARALLAX"] = 0.0
@@ -56,32 +56,45 @@ class AcquisitionTemplate(Template):
         self["ISS.VLTITYPE"] = None
         return None
 
-    def _populate_from_simbad(self, target_table, gs_table, target_name = "", gs_name = ""):
+    def _populate_from_simbad(self, target_table = None, gs_table = None, target_name = None, gs_name = None):
         """ target type can be gs for coude guide star, or ft, or sc """
         # get coordinates of the guide star (gs) and the target
+        if target_table is None:
+            common.printerr("Target table not given")
         coord_tgt = SkyCoord(target_table["RA"][0], target_table['DEC'][0], unit=(u.hourangle, u.deg))
-        coord_gs = SkyCoord(gs_table["RA"][0], gs_table['DEC'][0], unit=(u.hourangle, u.deg))
-
-        # FIIL OUT THE GS properties
-        self["COU.AG.GSSOURCE"] = "SETUPFILE"
-        self["COU.AG.ALPHA"] = coord_gs.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)
-        self["COU.AG.DELTA"] = coord_gs.dec.to_string(sep=":", precision=3, alwayssign=True)
-        try:
-            self["COU.AG.PMA"] = round((gs_table["PMRA"].to(u.arcsec/u.yr))[0].value, 5)
-            self["COU.AG.PMD"] = round((gs_table["PMDEC"].to(u.arcsec/u.yr))[0].value, 5)
-        except:
-            common.printwar("Proper motion not found on Simbad for target {}".format(gs_name))
-        try:
-            self["COU.AG.PARALLAX"] = round((gs_table['PLX_VALUE'][0]*u.mas).to(u.arcsec).value, 4)
-        except:
-            self["COU.AG.PARALLAX"] = 0
-            common.printwar("Parallax not found on Simbad for target {}".format(gs_name))
-        if self["COU.GS.MAG"] is None:
-            try:
-                self["COU.GS.MAG"] = round(gs_table['FLUX_G'][0], 2)     
-            except:
-                common.printerr("G band magnitude not found on Simbad for target {}. Please specify a G band mag using 'g_mag: xx' in the yml. See the examples.'".format(gs_name))
-                
+        # FILL OUT THE GS properties if given
+        if gs_name is None:
+            pass
+        else:
+            if gs_name.lower() == "ft":
+                self["COU.AG.GSSOURCE"] = "FT"
+            elif gs_name.lower() == "science":
+                self["COU.AG.GSSOURCE"] = "SCIENCE"
+            elif not(gs_table is None):        
+                coord_gs = SkyCoord(gs_table["RA"][0], gs_table['DEC'][0], unit=(u.hourangle, u.deg))
+                self["COU.AG.GSSOURCE"] = "SETUPFILE"
+                self["COU.AG.ALPHA"] = coord_gs.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)
+                self["COU.AG.DELTA"] = coord_gs.dec.to_string(sep=":", precision=3, alwayssign=True)
+                try:
+                    self["COU.AG.PMA"] = round((gs_table["PMRA"].to(u.arcsec/u.yr))[0].value, 5)
+                    self["COU.AG.PMD"] = round((gs_table["PMDEC"].to(u.arcsec/u.yr))[0].value, 5)
+                except:
+                    common.printwar("Proper motion not found on Simbad for target {}".format(gs_name))
+                try:
+                    self["COU.AG.PARALLAX"] = round((gs_table['PLX_VALUE'][0]*u.mas).to(u.arcsec).value, 4)
+                except:
+                    self["COU.AG.PARALLAX"] = 0
+                    common.printwar("Parallax not found on Simbad for target {}".format(gs_name))
+                if self["COU.GS.MAG"] is None:
+                    try:
+                        self["COU.GS.MAG"] = round(gs_table['FLUX_G'][0], 2)     
+                    except:
+                        common.printerr("G band magnitude not found on Simbad for target {}. Please specify a G band mag using 'g_mag: xx' in the yml. See the examples.'".format(gs_name))                
+            else:
+                pass
+        # if the GS mag is still None, then we have to put the target mag
+        if self["COU.GS.MAG"] is None:            
+            self["COU.GS.MAG"] = round(target_table['FLUX_G'][0], 2)                 
         # FILL OUT TARGET PROPERTIES
         try:
             self["TEL.TARG.PARALLAX"] = round((target_table['PLX_VALUE'][0]*u.mas).to(u.arcsec).value, 4)
@@ -96,7 +109,7 @@ class AcquisitionTemplate(Template):
         return None
 
     @abstractmethod
-    def populate_from_simbad(self, target_table, gs_table, target_name = "", gs_name = ""):
+    def populate_from_simbad(self, target_table = None, gs_table = None, target_name = "", gs_name = ""):
         raise NotImplementedError("Must be overriden")
 
     
@@ -127,8 +140,8 @@ class SingleOnAxisAcq(AcquisitionTemplate):
         self["SEQ.INS.SOBJ.HMAG"] = None
         return None
 
-    def populate_from_simbad(self, target_table, gs_table, target_name = "", gs_name = ""):
-        super(SingleOnAxisAcq, self)._populate_from_simbad(target_table, gs_table, target_name = "", gs_name = "")
+    def populate_from_simbad(self, target_table = None, gs_table = None, target_name = "", gs_name = ""):
+        super(SingleOnAxisAcq, self)._populate_from_simbad(target_table = target_table, gs_table = gs_table, target_name = target_name, gs_name = gs_name)
         if self["SEQ.INS.SOBJ.HMAG"] is None:
             try:
                 self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
@@ -164,8 +177,8 @@ class SingleOffAxisAcq(AcquisitionTemplate):
         self["SEQ.INS.SOBJ.HMAG"] = None
         return None
 
-    def populate_from_simbad(self, target_table, gs_table, target_name = "", gs_name = ""):
-        super(SingleOffAxisAcq, self)._populate_from_simbad(target_table, gs_table, target_name = "", gs_name = "")
+    def populate_from_simbad(self, target_table = None, gs_table = None, target_name = "", gs_name = ""):
+        super(SingleOffAxisAcq, self)._populate_from_simbad(target_table = target_table, gs_table = gs_table, target_name = target_name, gs_name = gs_name)        
         if self["SEQ.INS.SOBJ.HMAG"] is None:
             try:
                 self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
@@ -218,8 +231,8 @@ class DualOnAxisAcq(AcquisitionTemplate):
         self["COU.AG.GSSOURCE"] = "FT"
         return None
 
-    def populate_from_simbad(self, target_table, gs_table, target_name = "", gs_name = ""):
-        super(DualOnAxisAcq, self)._populate_from_simbad(target_table, gs_table, target_name = "", gs_name = "")
+    def populate_from_simbad(self, target_table = None, gs_table = None, target_name = "", gs_name = ""):
+        super(DualOnAxisAcq, self)._populate_from_simbad(target_table = target_table, gs_table = gs_table, target_name = target_name, gs_name = gs_name)        
         if self["SEQ.FT.ROBJ.MAG"] is None:
             try:        
                 self["SEQ.FT.ROBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
@@ -327,14 +340,14 @@ class DualWideAcq(AcquisitionTemplate):
         self["SEQ.FT.ROBJ.VIS"] = 1.0
         self["SEQ.INS.SOBJ.X"] = 0.0
         self["SEQ.INS.SOBJ.Y"] = 0.0
-        self["COU.AG.GSSOURCE"] = "FT"        
+        self["COU.AG.GSSOURCE"] = "SCIENCE"        
         return None
 
     def populate_from_yml(self, yml):
         super(DualWideAcq, self).populate_from_yml(yml)            
         return None
 
-    def _populate_ft_target_from_simbad(self, target_table, target_name):
+    def _populate_ft_target_from_simbad(self, target_table = None, target_name = None):
         coord = SkyCoord(target_table["RA"][0], target_table['DEC'][0], unit=(u.hourangle, u.deg))        
         self["SEQ.FT.ROBJ.NAME"] = target_name
         if self["SEQ.FT.ROBJ.MAG"] is None:
@@ -361,7 +374,8 @@ class DualWideAcq(AcquisitionTemplate):
             common.printwar("Parallax not found on Simbad for target {}".format(target_name))
         return None
 
-    def _populate_sc_target_from_simbad(self, target_table, target_name):
+    def _populate_sc_target_from_simbad(self, target_table = None, target_name = None, gs_name = None, gs_table = None):
+        super(DualWideAcq, self)._populate_from_simbad(target_table = target_table, target_name = target_name, gs_table = gs_table, gs_name = gs_name)
         coord = SkyCoord(target_table["RA"][0], target_table['DEC'][0], unit=(u.hourangle, u.deg))        
         self["SEQ.INS.SOBJ.NAME"] = target_name
         if self["SEQ.INS.SOBJ.MAG"] is None:
@@ -369,9 +383,9 @@ class DualWideAcq(AcquisitionTemplate):
                 self["SEQ.INS.SOBJ.MAG"] = round(target_table['FLUX_K'][0], 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
-        if self["SEQ.INS.SOBJ.HMAG"] is None:
+        if self["SEQ.FT.ROBJ.HMAG"] is None:
             try:
-                self["SEQ.INS.SOBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
+                self["SEQ.FT.ROBJ.HMAG"] = round(target_table['FLUX_H'][0], 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify an H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
         try:
