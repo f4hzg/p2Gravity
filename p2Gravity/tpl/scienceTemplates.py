@@ -153,7 +153,6 @@ class DualObsExp(ScienceTemplate):
                 self["SEQ.RELOFF.X"][-1] = round(self["SEQ.RELOFF.X"][-1] - np.sum(np.array(self["SEQ.RELOFF.X"][:-1])), 2)
                 self["SEQ.RELOFF.Y"][-1] = round(self["SEQ.RELOFF.Y"][-1] - np.sum(np.array(self["SEQ.RELOFF.Y"][:-1])), 2)
                 self.populate_from_yml(obj_yml)
-        print(self)
         self["SEQ.OBSSEQ"] = exposures_ESO
         return None
 
