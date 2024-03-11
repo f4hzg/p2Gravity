@@ -8,10 +8,7 @@ from .observingBlock import ObservingBlock
 
 # import re to properly split swap in sequence
 import re
-
 import numpy as np
-
-import math
 
 # to resolve planet position
 try:
@@ -20,7 +17,6 @@ try:
 except:
     common.printwar("Cannot load whereistheplanet module. 'whereistheplanet' will not be available as a coord_syst.")
     WHEREISTHEPLANET = False    
-
 
 class DualOffOb(ObservingBlock):
     def __init__(self, *args, **kwargs):
@@ -43,13 +39,13 @@ class DualOffOb(ObservingBlock):
             self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]
         else:
             if not("target" in self.yml):
-                printerr("No 'target' specified in ObservingBlocks")
+                common.printerr("No 'target' specified in ObservingBlocks")
             self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["target"]
         if "sc_target" in self.yml:
             self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["sc_target"]
         else:
             if not("target" in self.yml):
-                printerr("No 'target' specified in ObservingBlocks")                        
+                common.printerr("No 'target' specified in ObservingBlocks")                        
             self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["target"]
         # use the mean of templates to set the direction of acquisition
         dx = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates if tpl.template_name == "GRAVITY_dual_obs_exp"]).mean()
@@ -65,7 +61,7 @@ class DualOffOb(ObservingBlock):
                 self.acquisition["SEQ.INS.SOBJ.Y"] = round(self.yml["coord"][1], 2)
             elif self.yml["coord_syst"] == "pasep":
                 pa, sep = self.yml["coord"]
-                ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
+                ra, dec = np.sin(np.deg2rad(pa))*sep, np.cos(np.deg2rad(pa))*sep
                 self.acquisition["SEQ.INS.SOBJ.X"] = round(ra, 2)
                 self.acquisition["SEQ.INS.SOBJ.Y"] = round(dec, 2)
             elif self.yml["coord_syst"] == "whereistheplanet":
@@ -80,19 +76,16 @@ class DualOffOb(ObservingBlock):
                 common.printerr("Unknown coordinate system {}".format(self.yml["coord_syst"]))
         return None
 
-    def _generate_template(self, obj_yml, exposures):
+    def _generate_template(self, exposures):
         """
         generate the template from the given yml dict and exposure 
         """        
         if exposures == "swap":
             template = tpl.DualObsSwap()            
             template.populate_from_yml(self.yml)
-            template.populate_from_yml(obj_yml)            
         else:
             template = tpl.DualObsExp(iscalib = self.iscalib)
-            template.populate_from_yml(self.yml)            
-            template.populate_from_yml(obj_yml)
-            template["SEQ.OBSSEQ"] = exposures
+            template.populate_offsets_from_object_yml(exposures, self.objects, date = self.setup["date"])
         return template
 
     def generate_templates(self):
@@ -102,23 +95,25 @@ class DualOffOb(ObservingBlock):
         # split sequences on swaps:
         sequences = []
         for seq in self.yml["sequence"]:
-            for dummy in re.split("\W(swap)", seq.rstrip().lstrip()):
-                sequences.append(dummy)
+            for dummy in re.split("(\W|\A)(swap)", seq.rstrip().lstrip()):
+                dummy = dummy.rstrip().lstrip()
+                if dummy != "":
+                    sequences.append(dummy)
         for seq in sequences:
             exposures = seq.rstrip().lstrip().split(" ")
             if exposures == ["swap"]: # no test in this case
-                self.templates.append(self._generate_template(obj_yml, "swap"))
+                self.templates.append(self._generate_template("swap"))
             else:
+                if len(set([dummy for dummy in exposures if dummy != "sky"])) > 1: # more than one object which is not sky
+                    if len(set([self.objects[dummy]["DET2.DIT"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.DIT. Please split them on different lines.".format(exposures, self.label))
+                    if len(set([self.objects[dummy]["DET2.NDIT.SKY"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.NDIT.SKY.. Please split them on different lines.".format(exposures, self.label))
+                    if len(set([self.objects[dummy]["DET2.NDIT.OBJECT"] for dummy in exposures if dummy != "sky"])) > 1 : # check if all dits are the same
+                        common.printerr("Sequence '{}' in OB '{}' contains objects with different DET2.NDIT.OBJECT. Please split them on different lines.".format(exposures, self.label))
                 if not("sky" in exposures):
                     common.printwar("No sky in sequence {} in OB '{}'".format(exposures, self.label))
-                if len(set([dummy for dummy in exposures if dummy != "sky"])) > 1: # number of object different from sky
-                    common.printerr("Sequence '{}' in OB '{}' contains more than one object".format(exposures, self.label))
-                obj_label = [dummy for dummy in exposures if dummy != "sky"][0]
-                if not(obj_label in self.objects):
-                    common.printerr("Exposure '{}' in OB '{}' does not match any of the objects".format(obj_label, self.label))
-                obj_yml = self.objects[obj_label]
-                exposures = " ".join(exposures).replace(obj_label, "O").replace("sky", "S") # exposure in ESO format
-                self.templates.append(self._generate_template(obj_yml, exposures))
+                self.templates.append(self._generate_template(exposures))
         # now we can generate acquisition                
         self._generate_acquisition()
         return None

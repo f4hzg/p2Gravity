@@ -7,17 +7,6 @@ from .. import common
 from .observingBlock import ObservingBlock
 import numpy as np
 
-import math
-
-# to resolve planet position
-try:
-    import whereistheplanet
-    WHEREISTHEPLANET = True    
-except:
-    common.printwar("Cannot load whereistheplanet module. 'whereistheplanet' will not be available as a coord_syst.")
-    WHEREISTHEPLANET = False    
-
-
 class DualOnOb(ObservingBlock):    
     def __init__(self, *args, **kwargs):
         """
@@ -65,43 +54,7 @@ class DualOnOb(ObservingBlock):
         geneate the template from the given yml dict and exposure 
         """
         template = tpl.DualObsExp(iscalib = self.iscalib)
-        template["SEQ.RELOFF.X"] = []
-        template["SEQ.RELOFF.Y"] = []
-        exposures_ESO = ""
-        for exposure in exposures:
-            if exposure.lower() == "sky":
-                template["SEQ.RELOFF.X"].append(0)
-                template["SEQ.RELOFF.Y"].append(0)                                                
-                exposures_ESO = exposures_ESO + " S"
-            else:
-                obj_yml = self.objects[exposure]
-                if "coord_syst" in obj_yml:
-                    if obj_yml["coord_syst"] == "radec":
-                        template["SEQ.RELOFF.X"].append(round(obj_yml["coord"][0], 2))
-                        template["SEQ.RELOFF.Y"].append(round(obj_yml["coord"][1], 2))
-                    elif obj_yml["coord_syst"] == "pasep":
-                        pa, sep = obj_yml["coord"]
-                        ra, dec = math.sin(pa/180*math.pi)*sep, math.cos(pa/180.0*math.pi)*sep
-                        template["SEQ.RELOFF.X"].append(round(ra, 2))
-                        template["SEQ.RELOFF.Y"].append(round(dec, 2))
-                    elif obj_yml["coord_syst"] == "whereistheplanet":
-                        if WHEREISTHEPLANET:
-                            common.printinf("Resolution of {} with whereistheplanet:".format(obj_yml["coord"]))
-                            ra, dec, sep, pa = whereistheplanet.predict_planet(obj_yml["coord"], self.setup["date"])
-                            template["SEQ.RELOFF.X"].append(round(ra[0], 2))
-                            template["SEQ.RELOFF.Y"].append(round(dec[0], 2))
-                        else: 
-                            common.printerr("whereistheplanet used as a coord_syst, but whereistheplanet module could not be loaded")
-                    else:
-                        common.printerr("Unknown coordinate system {}".format(obj_yml["coord_syst"]))
-                    # add the exposure in the ESO format
-                    exposures_ESO = exposures_ESO + " O"                            
-                    # don't forget that these offsets are cumulative, so we need to
-                    # remove the previous cumsum from each newly calculated offset
-                    template["SEQ.RELOFF.X"][-1] = template["SEQ.RELOFF.X"][-1] - np.sum(np.array(template["SEQ.RELOFF.X"][:-1]))
-                    template["SEQ.RELOFF.Y"][-1] = template["SEQ.RELOFF.Y"][-1] - np.sum(np.array(template["SEQ.RELOFF.Y"][:-1]))
-                template.populate_from_yml(obj_yml)
-        template["SEQ.OBSSEQ"] = exposures_ESO
+        template.populate_offsets_from_object_yml(exposures, self.objects, date = self.setup["date"])
         return template
 
     def generate_templates(self):
