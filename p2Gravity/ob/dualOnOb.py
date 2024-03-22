@@ -37,10 +37,16 @@ class DualOnOb(ObservingBlock):
                 common.printerr("No 'target' specified in ObservingBlock")                        
             self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["target"]
         # use the mean of first position of templates to set the direction of acquisition
-        dx = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates]).mean()
-        dy = np.array([tpl["SEQ.RELOFF.Y"][0] for tpl in self.templates]).mean()
-        self.acquisition["SEQ.INS.SOBJ.X"] = round(dx/np.sqrt(dx**2+dy**2), 2) # 1 mas total sep
-        self.acquisition["SEQ.INS.SOBJ.Y"] = round(dy/np.sqrt(dx**2+dy**2), 2)
+        dxs = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates])
+        dys = np.array([tpl["SEQ.RELOFF.Y"][0] for tpl in self.templates])
+        dsep = np.sqrt(dxs**2 + dys**2)
+        if dsep.max() > 1:
+            dx =  dxs[dsep > 1].mean()
+            dy =  dys[dsep > 1].mean()
+        else:
+            dy,dy = dxs[0],dys[0]
+        self.acquisition["SEQ.INS.SOBJ.X"] = round(dx, 2)
+        self.acquisition["SEQ.INS.SOBJ.Y"] = round(dy, 2)
         # now we need to remove the acq position from the first element of each templates
         for template in self.templates:
             template["SEQ.RELOFF.X"][0] = template["SEQ.RELOFF.X"][0] - self.acquisition["SEQ.INS.SOBJ.X"]
