@@ -49,18 +49,18 @@ class ObservingBlock(object):
     def _fill_magnitudes(self, yml):
         """ check if magnitudes are in the given yml. If so, put them in their proper locations in acq template """
         if "k_mag" in yml:
-            if "SEQ.INS.SOBJ.MAG" in self.acquisition:
-                self.acquisition["SEQ.INS.SOBJ.MAG"] = self.yml["k_mag"]
-            if "SEQ.FT.ROBJ.MAG" in self.acquisition:                
-                self.acquisition["SEQ.FT.ROBJ.MAG"] = self.yml["k_mag"]
+            if "SEQ.INS.SOBJ.MAG.K" in self.acquisition:
+                self.acquisition["SEQ.INS.SOBJ.MAG.K"] = self.yml["k_mag"]
+            if "TEL.TARG.MAG.K" in self.acquisition:                
+                self.acquisition["TEL.TARG.MAG.K"] = self.yml["k_mag"]
         if "h_mag" in yml:
-            if "SEQ.FT.ROBJ.HMAG" in self.acquisition:                            
-                self.acquisition["SEQ.INS.SOBJ.HMAG"] = self.yml["h_mag"]
-            if "SEQ.FT.ROBJ.HMAG" in self.acquisition:                                
-                self.acquisition["SEQ.FT.ROBJ.HMAG"] = self.yml["h_mag"]
+            if "SEQ.INS.SOBJ.MAG.H" in self.acquisition:                            
+                self.acquisition["SEQ.INS.SOBJ.MAG.H"] = self.yml["h_mag"]
+            if "TEL.TARG.MAG.H" in self.acquisition:                                
+                self.acquisition["TEL.TARG.MAG.H"] = self.yml["h_mag"]
         if "g_mag" in yml:
-            if "COU.GS.MAG" in self.acquisition:                            
-                self.acquisition["COU.GS.MAG"] = self.yml["g_mag"]
+            if "COU.NGS.MAG" in self.acquisition:                            
+                self.acquisition["COU.NGS.MAG"] = self.yml["g_mag"]
         return None
     
     def _populate_from_simbad(self, target_table, target_name = ""):
@@ -69,12 +69,12 @@ class ObservingBlock(object):
         Simbad. Target_name is only used to display useful warning and error to the user.
         Populate: RA, DEC, PMRA, PMDEC from simbad.
         """
-        coord = SkyCoord(target_table["RA"][0], target_table['DEC'][0], unit=(u.hourangle, u.deg))
+        coord = SkyCoord(target_table["ra"][0],target_table['dec'][0], unit=u.deg)
         self.target["ra"] = coord.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)
         self.target["dec"] = coord.dec.to_string(sep=":", precision=3, alwayssign=True)
         try:
-            self.target["properMotionRa"] = round((target_table["PMRA"].to(u.arcsec/u.yr))[0].value, 5)
-            self.target["properMotionDec"] = round((target_table["PMDEC"].to(u.arcsec/u.yr))[0].value, 5)
+            self.target["properMotionRa"] = round((target_table["pmra"].to(u.arcsec/u.yr))[0].value, 5)
+            self.target["properMotionDec"] = round((target_table["pmdec"].to(u.arcsec/u.yr))[0].value, 5)
         except:
             common.printwar("Proper motion not found on Simbad for target {}".format(target_name))
         return None
