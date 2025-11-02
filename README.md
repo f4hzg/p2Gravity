@@ -1,5 +1,9 @@
 # Tools to generate OBs for GRAVITY
 
+updated for P116 submission- 5 Aug 2025
+- simbad query columns changed for magnitudes, parallax, and proper motions
+- p2 tool changed header names for values resulting in empyt/incorrect values p2ui  
+
 ## Requires: 
 - numpy
 - astropy, astroquery
