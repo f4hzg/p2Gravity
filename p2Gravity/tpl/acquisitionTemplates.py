@@ -326,16 +326,16 @@ class DualWideAcq(AcquisitionTemplate):
     Parameter -- Range (Default) -- Desciption
     SEQ.FT.MODE --  AUTO 1 2 7 9 (AUTO) -- Fringe Tracker mode
     SEQ.MET.MODE -- ON FAINT OFF (ON) -- Metrology laser mode    
-    TEL.TARG.ALPHA -- 0...240000 (00:00:00.000) -- FT object RA
-    TEL.TARG.DELTA -- -900000...900000 (00:00:00.000) -- FT object DEC
-    TEL.TARG.PARALLAX -20...20 (0) -- FT object parallax in arcseconds
-    TEL.TARG.PMA -10...10 (0) -- FT object proper motion in RA
-    TEL.TARG.PMD -10...10 (0) -- FT object proper motion in DEC
-    TEL.TARG.EPOCH -2000...3000 (2000) -- FT object epoch
-    TEL.TARG.NAME -- (Name) -- FT object name
-    TEL.TARG.MAG.K --  -10...30 (0) -- FT object total magnitude
-    TEL.TARG.DIAMETER -- 0...300 (0) -- FT object diameter (mas). Only required for calibrator OBs.
-    TEL.TARG.VIS -- -0...1.0 (0) -- FT object expected visibility
+    COU.FTS.ALPHA -- 0...240000 (00:00:00.000) -- FT object RA
+    COU.FTS.DELTA -- -900000...900000 (00:00:00.000) -- FT object DEC
+    COU.FTS.PARALLAX -20...20 (0) -- FT object parallax in arcseconds
+    COU.FTS.PMA -10...10 (0) -- FT object proper motion in RA
+    COU.FTS.PMD -10...10 (0) -- FT object proper motion in DEC
+    COU.FTS.EPOCH -2000...3000 (2000) -- FT object epoch
+    COU.FTS.NAME -- (Name) -- FT object name
+    COU.FTS.MAG.K --  -10...30 (0) -- FT object total magnitude
+    COU.FTS.DIAMETER -- 0...300 (0) -- FT object diameter (mas). Only required for calibrator OBs.
+    COU.FTS.VIS -- -0...1.0 (0) -- FT object expected visibility
     SEQ.INS.SOBJ.NAME -- (Name) -- SC object name
     SEQ.INS.SOBJ.MAG.K -- -10...30 (0) -- SC object total magitude
     SEQ.INS.SOBJ.DIAMETER -- 0...300 (0) -- SC object diameter (mas). Only required for calibrator OBs.
@@ -360,17 +360,17 @@ class DualWideAcq(AcquisitionTemplate):
         self.template_name = 'GRAVITY_dual_wide_acq'
         self["SEQ.FT.MODE"] = "AUTO"
         self["SEQ.MET.MODE"] = "ON"
-        self["TEL.TARG.NAME"] = "Name"
-        self["TEL.TARG.ALPHA"] = "00:00:00.000"
-        self["TEL.TARG.DELTA"] = "00:00:00.000"
-        self["TEL.TARG.PARALLAX"] = 0
-        self["TEL.TARG.PMA"] = 0
-        self["TEL.TARG.PMD"] = 0
-        self["TEL.TARG.EPOCH"] = 2000.0
-        self["TEL.TARG.MAG.K"] = None
-        self["TEL.TARG.MAG.H"] = None
-        self["TEL.TARG.DIAMETER"] = 0.0
-        self["TEL.TARG.VIS"] = 1.0
+        self["COU.FTS.NAME"] = "Name"
+        self["COU.FTS.ALPHA"] = "00:00:00.000"
+        self["COU.FTS.DELTA"] = "00:00:00.000"
+        self["COU.FTS.PARALLAX"] = 0
+        self["COU.FTS.PMA"] = 0
+        self["COU.FTS.PMD"] = 0
+        self["COU.FTS.EPOCH"] = 2000.0
+        self["COU.FTS.MAG.K"] = None
+        self["COU.FTS.MAG.H"] = None
+        self["COU.FTS.DIAMETER"] = 0.0
+        self["COU.FTS.VIS"] = 1.0
         self["SEQ.INS.SOBJ.X"] = 0.0
         self["SEQ.INS.SOBJ.Y"] = 0.0
         self["COU.NGS.SOURCE"] = "SCIENCE"        
@@ -383,27 +383,28 @@ class DualWideAcq(AcquisitionTemplate):
     def _populate_ft_target_from_simbad(self, target_table = None, target_name = None):
         coord = SkyCoord(target_table["ra"][0], target_table['dec'][0], unit=(u.hourangle, u.deg))        
         self["TEL.TARG.NAME"] = target_name
-        if self["TEL.TARG.MAG.K"] is None:
+        if self["COU.FTS.MAG.K"] is None:
             try:        
-                self["TEL.TARG.MAG.K"] = round(float(target_table['K'][0]), 2)
+                self["COU.FTS.MAG.K"] = round(float(target_table['K'][0]), 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
-        if self["TEL.TARG.MAG.H"] is None:
+        if self["COU.FTS.MAG.H"] is None:
             try:
-                self["TEL.TARG.MAG.H"] = round(float(target_table['H'][0]), 2)
+                self["COU.FTS.MAG.H"] = round(float(target_table['H'][0]), 2)
             except:
-                common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
-        self["TEL.TARG.ALPHA"] = coord.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)        
-        self["TEL.TARG.DELTA"] = coord.dec.to_string(sep=":", precision=3, alwayssign=True)
+                common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))                
+        self["COU.FTS.ALPHA"] = coord.ra.to_string(unit=u.hourangle, sep=":", precision=3, pad=True)        
+        self["COU.FTS.DELTA"] = coord.dec.to_string(sep=":", precision=3, alwayssign=True)
+        print(self)
         try:
-            self["TEL.TARG.PMA"] = round(float((target_table["pmra"].to(u.arcsec/u.yr))[0]).value, 5)
-            self["TEL.TARG.PMD"] = round(float((target_table["pmdec"].to(u.arcsec/u.yr))[0]).value, 5)
+            self["COU.FTS.PMA"] = round(float((target_table["pmra"].to(u.arcsec/u.yr))[0]).value, 5)
+            self["COU.FTS.PMD"] = round(float((target_table["pmdec"].to(u.arcsec/u.yr))[0]).value, 5)
         except:
             common.printwar("Proper motion not found on Simbad for target {}".format(target_name))                   
         try:
-            self["TEL.TARG.PARALLAX"] = round(float((target_table['plx_value'][0]*u.mas).to(u.arcsec).value), 4)
+            self["COU.FTS.PARALLAX"] = round(float((target_table['plx_value'][0]*u.mas).to(u.arcsec).value), 4)
         except:
-            self["TEL.TARG.PARALLAX"] = 0
+            self["COU.FTS.PARALLAX"] = 0
             common.printwar("Parallax not found on Simbad for target {}".format(target_name))
         return None
 
@@ -411,14 +412,9 @@ class DualWideAcq(AcquisitionTemplate):
         super(DualWideAcq, self)._populate_from_simbad(target_table = target_table, target_name = target_name, gs_table = gs_table, gs_name = gs_name)
         coord = SkyCoord(target_table["ra"][0], target_table['dec'][0], unit=u.deg)        
         self["SEQ.INS.SOBJ.NAME"] = target_name
-        if self["SEQ.INS.SOBJ.MAG.K"] is None:
-            try:        
-                self["SEQ.INS.SOBJ.MAG.K"] = round(float(target_table['K'][0]), 2)
-            except:
-                common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
-        if self["SEQ.INS.SOBJ.MAG.H"] is None:
+        if self["TEL.TARG.MAG.K"] is None:
             try:
-                self["SEQ.INS.SOBJ.MAG.H"] = round(float(target_table['H'][0]), 2)
+                self["TEL.TARG.MAG.K"] = round(float(target_table['H'][0]), 2)
             except:
                 common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
         if self["TEL.TARG.MAG.H"] is None:

@@ -22,7 +22,7 @@ class SingleOffOb(ObservingBlock):
         """        
         self.acquisition = tpl.SingleOffAxisAcq()
         self._fill_magnitudes(self.yml)        
-        self.acquisition["SEQ.FT.ROBJ.NAME"] = self.objects["star"]["name"]
+        self.acquisition["COU.FTS.NAME"] = self.objects["star"]["name"]
         first_object_label = [object_label for object_label in self.objects if object_label != "star"][0]
         self.acquisition["SEQ.INS.SOBJ.NAME"] = self.objects[first_object_label]["name"]
         # use the first template to set the coodinates

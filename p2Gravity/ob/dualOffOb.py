@@ -36,17 +36,17 @@ class DualOffOb(ObservingBlock):
         self._fill_magnitudes(self.yml)
         # set target names
         if "ft_target" in self.yml:
-            self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]
+            self.acquisition["COU.FTS.NAME"] = self.yml["ft_target"]
         else:
             if not("target" in self.yml):
                 common.printerr("No 'target' specified in ObservingBlocks")
-            self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["target"]
+            self.acquisition["COU.FTS.NAME"] = self.yml["target"]
         if "sc_target" in self.yml:
-            self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["sc_target"]
+            self.acquisition["TEL.TARG.NAME"] = self.yml["sc_target"]
         else:
             if not("target" in self.yml):
                 common.printerr("No 'target' specified in ObservingBlocks")                        
-            self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["target"]
+            self.acquisition["TEL.TARG.NAME"] = self.yml["target"]
         # use the mean of templates to set the direction of acquisition
         dx = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates if tpl.template_name == "GRAVITY_dual_obs_exp"]).mean()
         dy = np.array([tpl["SEQ.RELOFF.Y"][0] for tpl in self.templates if tpl.template_name == "GRAVITY_dual_obs_exp"]).mean()

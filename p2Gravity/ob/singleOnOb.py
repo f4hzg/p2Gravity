@@ -23,11 +23,11 @@ class SingleOnOb(ObservingBlock):
         self.acquisition = tpl.SingleOnAxisAcq()
         self._fill_magnitudes(self.yml)        
         if "ft_target" in self.yml:
-            self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]
+            self.acquisition["COU.FTS.NAME"] = self.yml["ft_target"]
         else:
             if not("target" in self.yml):
                 printerr("No 'target' specified in ObservingBlocks")
-            self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["target"]
+            self.acquisition["COU.FTS.NAME"] = self.yml["target"]
         if "sc_target" in self.yml:
             self.acquisition["SEQ.INS.SOBJ.NAME"] = self.yml["sc_target"]
         else:

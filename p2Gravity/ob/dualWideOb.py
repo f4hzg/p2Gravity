@@ -13,6 +13,20 @@ from astroquery.simbad import Simbad
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
+# going for 0.4.7 to 0.4.8 has changed case in some astroquery fields. We need to take care of it.
+import astroquery
+from packaging.version import Version
+ASTROQUERY_OLD = Version(astroquery.__version__) < Version("0.4.8")
+ASTROQUERY_TRANSLATION = dict({"RA": "ra",
+                               "DEC": "dec",
+                               "PMRA": "pmra",
+                               "PMDEC": "pmdec",
+                               "PLX": "plx",
+                               "FLUX_G": "G",
+                               "FLUX_H": "H",
+                               "FLUX_K": "K",
+                               "FLUX_R": "R"})
+
 import math
 
 # to resolve planet position
@@ -42,7 +56,7 @@ class DualWideOb(ObservingBlock):
         self._fill_magnitudes(self.yml)        
         # set target names. in this mode, both sc_target and ft_target are required
         if "ft_target" in self.yml:
-            self.acquisition["SEQ.FT.ROBJ.NAME"] = self.yml["ft_target"]
+            self.acquisition["COU.FTS.NAME"] = self.yml["ft_target"]
         else:
             printerr("No 'ft_target' specified in ObservingBlocks")
         if "sc_target" in self.yml:
@@ -65,6 +79,7 @@ class DualWideOb(ObservingBlock):
                 gs_name = ob["guide_star"]
                 if not(ob["guide_star"].lower() in ["science", "ft"]):
                     gs_table = self.simbad_get_table(gs_name)
+
         # RESOLVE SC TARGET
         target_name = ob["sc_target"]
         common.printinf("Resolving target {} on Simbad".format(target_name))
@@ -75,6 +90,20 @@ class DualWideOb(ObservingBlock):
         if len(target_table) > 1:
             printwar("There are multiple results from Simbad. Which one should I use? (1, 2, etc.?)")
             stop()
+
+        # to ensure compatibility with all versions of astroquery
+        table_d = dict(target_table)
+        if ASTROQUERY_OLD:
+            table_translated = dict({})
+            for key in table_d:
+                if key in ASTROQUERY_TRANSLATION:
+                    table_translated[ASTROQUERY_TRANSLATION[key]] = table_d[key]
+                else:
+                    table_translated[key] = table_d[key]
+        else:
+            table_translated = table_d            
+        target_table = table_translated
+        
         # populate the "target" tab using the SC target
         self.target = dict({})
         self.target["name"] = target_name 
@@ -92,6 +121,20 @@ class DualWideOb(ObservingBlock):
         if len(target_table) > 1:
             printwar("There are multiple results from Simbad. Which one should I use? (1, 2, etc.?)")
             stop()
+
+        # to ensure compatibility with all versions of astroquery
+        table_d = dict(target_table)
+        if ASTROQUERY_OLD:
+            table_translated = dict({})
+            for key in table_d:
+                if key in ASTROQUERY_TRANSLATION:
+                    table_translated[ASTROQUERY_TRANSLATION[key]] = table_d[key]
+                else:
+                    table_translated[key] = table_d[key]
+        else:
+            table_translated = table_d            
+        target_table = table_translated
+            
         # populate FT in the acq template
         self.acquisition._populate_ft_target_from_simbad(target_table = target_table, target_name = target_name)
         
@@ -148,7 +191,7 @@ class DualWideOnOb(DualOnOb, DualWideOb):
                 common.printerr("Unknown coordinate system {}".format(obj_yml["coord_syst"]))
             # now we have dra, ddec, we need to recalculate SC position
             # FT coordinates
-            coord_ft = SkyCoord(self.acquisition["SEQ.FT.ROBJ.ALPHA"], self.acquisition["SEQ.FT.ROBJ.DELTA"], unit=(u.hourangle, u.deg))
+            coord_ft = SkyCoord(self.acquisition["COU.FTS.ALPHA"], self.acquisition["COU.FTS.DELTA"], unit=(u.hourangle, u.deg))
             # SC coordinates
             coord_sc = coord_ft.directional_offset_by(pa*u.deg, sep*u.mas)
             # put them in self.target

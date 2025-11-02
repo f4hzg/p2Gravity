@@ -49,16 +49,16 @@ def plot_acquisition(ob, ax = None, fiber_fov = 30, ft_c = FT_C, sc_c = SC_C):
         # center of field = acq target = ft target
         ax.plot(0, 0, "*k", markersize=20)        
         # plot FT fiber            
-        xft, yft = ob.acquisition["SEQ.FT.ROBJ.ALPHA"], ob.acquisition["SEQ.FT.ROBJ.DELTA"]
+        xft, yft = ob.acquisition["COU.FTS.ALPHA"], ob.acquisition["COU.FTS.DELTA"]
         xsc, ysc = ob.target["ra"], ob.target["dec"]
         coord_ft = SkyCoord(xft, yft, unit=(u.hourangle, u.deg))
         coord_sc = SkyCoord(xsc, ysc, unit=(u.hourangle, u.deg))
         pa = coord_ft.position_angle(coord_sc).to(u.rad).value
         sep = coord_ft.separation(coord_sc).to(u.arcsec).value
-        if ob.acquisition["COU.AG.GSSOURCE"] == "FT":
+        if ob.acquisition["COU.NGS.SOURCE"] == "FT":
             xsc, ysc = math.sin(pa)*sep, math.cos(pa)*sep
             xft, yft = 0, 0
-        elif ob.acquisition["COU.AG.GSSOURCE"] == "SCIENCE":
+        elif ob.acquisition["COU.NGS.SOURCE"] == "SCIENCE":
             xsc, ysc = 0, 0
             xft, yft = -math.sin(pa)*sep, -math.cos(pa)*sep
         else:
@@ -103,16 +103,16 @@ def plot_dualObsExp(ob, template, ax = None, fiber_fov = 30, ft_c = FT_C, sc_c =
     # FT fiber
     if ob.ob_type in ["DualWideOnOb", "DualWideOffOb"]:
         # gwide is a pain
-        xft, yft = ob.acquisition["SEQ.FT.ROBJ.ALPHA"], ob.acquisition["SEQ.FT.ROBJ.DELTA"]
+        xft, yft = ob.acquisition["COU.FTS.ALPHA"], ob.acquisition["COU.FTS.DELTA"]
         xsc, ysc = ob.target["ra"], ob.target["dec"]
         coord_ft = SkyCoord(xft, yft, unit=(u.hourangle, u.deg))
         coord_sc = SkyCoord(xsc, ysc, unit=(u.hourangle, u.deg))
         pa = coord_ft.position_angle(coord_sc).to(u.rad).value
         sep = coord_ft.separation(coord_sc).to(u.arcsec).value
-        if ob.acquisition["COU.AG.GSSOURCE"] == "FT":
+        if ob.acquisition["COU.NGS.SOURCE"] == "FT":
             xsc, ysc = math.sin(pa)*sep, math.cos(pa)*sep
             xft, yft = 0, 0
-        elif ob.acquisition["COU.AG.GSSOURCE"] == "SCIENCE":
+        elif ob.acquisition["COU.NGS.SOURCE"] == "SCIENCE":
             xsc, ysc = 0, 0
             xft, yft = -math.sin(pa)*sep, -math.cos(pa)*sep
         else:
@@ -194,16 +194,16 @@ def plot_dualObsSwap(ob, template, ax = None, fiber_fov = 30, ft_c = FT_C, sc_c 
         ax = fig.add_subplot(111)
     if ob.ob_type in ["DualWideOnOb", "DualWideOffOb"]:
         # gwide is a pain        
-        xft, yft = ob.acquisition["SEQ.FT.ROBJ.ALPHA"], ob.acquisition["SEQ.FT.ROBJ.DELTA"]
+        xft, yft = ob.acquisition["COU.FTS.ALPHA"], ob.acquisition["COU.FTS.DELTA"]
         xsc, ysc = ob.target["ra"], ob.target["dec"]
         coord_ft = SkyCoord(xft, yft, unit=(u.hourangle, u.deg))
         coord_sc = SkyCoord(xsc, ysc, unit=(u.hourangle, u.deg))
         pa = coord_ft.position_angle(coord_sc).to(u.rad).value
         sep = coord_ft.separation(coord_sc).to(u.arcsec).value
-        if ob.acquisition["COU.AG.GSSOURCE"] == "FT":
+        if ob.acquisition["COU.NGS.SOURCE"] == "FT":
             xsc, ysc = math.sin(pa)*sep, math.cos(pa)*sep
             xft, yft = 0, 0
-        elif ob.acquisition["COU.AG.GSSOURCE"] == "SCIENCE":
+        elif ob.acquisition["COU.NGS.SOURCE"] == "SCIENCE":
             xsc, ysc = 0, 0
             xft, yft = -math.sin(pa)*sep, -math.cos(pa)*sep
         else:
@@ -274,7 +274,7 @@ def plot_ob(ob, title = None, fov = None, bg=None, bglim=None, ft_c = None, sc_c
 #    ax_ob.invert_xaxis()
     ax_ob.set_aspect("equal")
     # now we can plot the acquisition
-    plot_acquisition(ob, fiber_fov = fiber_fov, ax = ax_ob, ft_c = ft_c, sc_c = sc_c)
+    plot_acquisition(ob, fiber_fov = fiber_fov, ax = ax_ob, ft_c = ft_c, sc_c = sc_c)    
     if ob.ob_type in ["DualWideOnOb", "DualWideOffOb"]:
         ax_ob.set_xlabel("$\Delta{}\mathrm{RA}$ (mas)")
         ax_ob.set_ylabel("$\Delta{}\mathrm{DEC}$ (mas)")
