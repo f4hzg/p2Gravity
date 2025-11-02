@@ -66,8 +66,6 @@ class AcquisitionTemplate(Template):
         # get coordinates of the guide star (gs) and the target
         if target_table is None:
             common.printerr("Target table not given")
-        print('we are here in populate from simbad')
-        print(target_table)
         coord_tgt = SkyCoord(target_table["ra"][0], target_table['dec'][0], unit=u.deg)
         # FILL OUT THE GS properties if given
         if gs_name is None:
@@ -121,7 +119,17 @@ class AcquisitionTemplate(Template):
                 self["SEQ.INS.SOBJ.MAG.H"] = round(float(target_table['H'][0]), 2)
             except:
                 common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
- 
+        if self["TEL.TARG.MAG.K"] is None:
+            try:
+                self["TEL.TARG.MAG.K"] = round(float(target_table['K'][0]), 2)
+            except:
+                common.printerr("K band magnitude not found on Simbad for target {}. Please specify a K band mag using 'k_mag: xx' in the yml. See the examples.'".format(target_name))
+        if self["TEL.TARG.MAG.H"] is None:
+            try:
+                self["TEL.TARG.MAG.H"] = round(float(target_table['H'][0]), 2)
+            except:
+                common.printerr("H band magnitude not found on Simbad for target {}. Please specify a H band mag using 'h_mag: xx' in the yml. See the examples.'".format(target_name))
+                
         return None
 
     @abstractmethod
@@ -374,7 +382,6 @@ class DualWideAcq(AcquisitionTemplate):
 
     def _populate_ft_target_from_simbad(self, target_table = None, target_name = None):
         coord = SkyCoord(target_table["ra"][0], target_table['dec'][0], unit=(u.hourangle, u.deg))        
-        print(coord)
         self["TEL.TARG.NAME"] = target_name
         if self["TEL.TARG.MAG.K"] is None:
             try:        

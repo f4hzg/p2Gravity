@@ -17,8 +17,7 @@ class Template(dict):
         A method to populate existing fields from yml dict
         Note that no new field is created
         """
-        for key in yml:
-            
+        for key in yml:            
             if key in self.params:
                 self[key] = yml[key]
         return None

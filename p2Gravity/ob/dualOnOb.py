@@ -53,7 +53,6 @@ class DualOnOb(ObservingBlock):
             template["SEQ.RELOFF.Y"][0] = template["SEQ.RELOFF.Y"][0] - self.acquisition["SEQ.INS.SOBJ.Y"]            
         # last step is to populate with setup, and then star object itself, which can be used to bypass any other setup
         self.acquisition.populate_from_yml(self.setup)
-        self.acquisition.populate_from_simbad(self.setup)
         return None
 
     def _generate_template(self, exposures):
