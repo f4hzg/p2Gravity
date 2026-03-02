@@ -113,6 +113,10 @@ if not(os.path.isfile(dargs["file"])):
 # LOAD CONFIG FILE
 loader = yaml.YAML(typ = "rt")
 cfg = loader.load(open(filename, "r"))
+try:
+    credentials = loader.load(open("credentials.yml", "r"))
+except FileNotFoundError:
+    credentials = None
         
 if "fov" in dargs:
     fov = int(dargs["fov"])
@@ -138,8 +142,12 @@ if demo:
     # setup for testing on P2 demo server
     api = p2api.ApiConnection('demo', 52052, "tutorial")
 else:
-    user = input("ESO P2 username: ")
-    password = getpass("ESO P2 password: ")
+    if credentials is None:
+        user = input("ESO P2 username: ")
+        password = getpass("ESO P2 password: ")
+    else:
+        user = credentials["username"]
+        password = credentials["password"]
     api = p2api.ApiConnection('production', user, password)
 
 if "bg" in dargs:
