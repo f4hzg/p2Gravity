@@ -40,11 +40,14 @@ class DualOnOb(ObservingBlock):
         dxs = np.array([tpl["SEQ.RELOFF.X"][0] for tpl in self.templates])
         dys = np.array([tpl["SEQ.RELOFF.Y"][0] for tpl in self.templates])
         dsep = np.sqrt(dxs**2 + dys**2)
-        if dsep.max() > 1:
+        if dsep.max() > 1 and dsep.max() < 400:
             dx =  dxs[dsep > 1].mean()
             dy =  dys[dsep > 1].mean()
+        elif dsep.max() >= 400: # acquisition offsets larger than 400 mas cause an error on the instrument
+            dx =  dxs[dsep > 1].mean() / 1000.
+            dy =  dys[dsep > 1].mean() / 1000.
         else:
-            dy,dy = dxs[0],dys[0]
+            dx,dy = dxs[0],dys[0]
         self.acquisition["SEQ.INS.SOBJ.X"] = round(dx, 2)
         self.acquisition["SEQ.INS.SOBJ.Y"] = round(dy, 2)
         # now we need to remove the acq position from the first element of each templates
