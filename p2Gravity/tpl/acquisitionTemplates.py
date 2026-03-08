@@ -23,7 +23,7 @@ class AcquisitionTemplate(Template):
     INS.FT.POL -- IN OUT (IN) -- Fringe-tracker polarisation mode split (IN) or combined (OUT).
     INS.SPEC.POL -- IN OUT (IN) -- Science spectrometer polarisation mode split (IN) or combined (OUT).
     COU.AG.TYPE -- DEFAULT ADAPT_OPT ADAPT_ OPT_TCCD IR_AO_OFFAXIS (DEFAULT) -- Type of Coude guiding.
-    COU.NGS.SOURCE -- SETUPFILE SCIENCE (SCIENCE) -- Coude guide star (GS) input.
+    COU.NGS.SOURCE -- SETUPFILE SCIENCE FT (FT) -- Coude guide star (GS) input.
     COU.AG.ALPHA -- RA (0.) -- GS RA if SETUPFILE
     COU.AG.DELTA -- DEC (0.) -- GS DEC if SETUPFILE
     COU.NGS.MAG -- 0...25 (0.) -- GS magnitude.
@@ -162,6 +162,7 @@ class SingleOnAxisAcq(AcquisitionTemplate):
         super(SingleOnAxisAcq, self).__init__(*args, **kwargs)
         self.template_name = 'GRAVITY_single_onaxis_acq'
         self["SEQ.INS.SOBJ.MAG.H"] = None
+        self["COU.NGS.SOURCE"] = "SCIENCE"
         return None
 
     def populate_from_simbad(self, target_table = None, gs_table = None, target_name = "", gs_name = ""):
